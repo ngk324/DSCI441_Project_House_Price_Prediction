@@ -42,3 +42,56 @@ data['state'] = pd.factorize(data['state'])[0]
 
 print(len(data))
 data.head()
+
+from sklearn.model_selection import train_test_split
+import statsmodels.api as sm
+from sklearn.metrics import mean_squared_error, mean_absolute_percentage_error
+import numpy as np
+
+
+# features and target
+X_ols = data.drop('price', axis=1)
+y_ols = data['price']
+
+X_train, X_test, y_train, y_test = train_test_split(X_ols, y_ols, test_size=0.2, random_state=1)
+
+# OLS regression
+model = sm.OLS(y_train, X_train).fit()
+
+# regression summary
+#print(model.summary())
+
+# predict
+y_pred = model.predict(X_test)
+
+# model evaluation
+mse = mean_squared_error(y_test, y_pred)
+print(f"Mean Squared Error (MSE): {mse}")
+mape = mean_absolute_percentage_error(y_test, y_pred)
+print("Mean Absolute Percentage Error:", mape)
+RMSE = np.sqrt(np.mean((y_test - y_pred)**2))
+print(RMSE)
+
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+
+# features and target
+X = data.drop('price', axis=1)
+y = data['price']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1)
+
+# Random Forest Regressor
+model_rf = RandomForestRegressor(random_state=1)
+model_rf.fit(X_train, y_train)
+
+# Predict
+y_pred_rf = model_rf.predict(X_test)
+
+# Evaluate model
+mse = mean_squared_error(y_test, y_pred_rf)
+print(f"Mean Squared Error (MSE): {mse}")
+mape = mean_absolute_percentage_error(y_test, y_pred_rf)
+print("Mean Absolute Percentage Error:", mape)
+RMSE = np.sqrt(np.mean((y_test - y_pred_rf)**2))
+print(RMSE)
