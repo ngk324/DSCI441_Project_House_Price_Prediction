@@ -11,7 +11,34 @@ Original file is located at
 
 !unzip usa-real-estate-dataset.zip
 
+!pip install ydata-profiling
+
 import pandas as pd
+from ydata_profiling import ProfileReport
+from IPython.display import clear_output, display, HTML
+
+clear_output()
 
 data = pd.read_csv('realtor-data.zip.csv')
+data.head()
+
+profile = ProfileReport(data, title="Housing Prices")
+profile
+
+# Only contain sold house data and remove status feature because all the status' are sold
+data = data[data['status'] ==  'sold']
+data = data.drop('status', axis=1)
+data = data.reset_index(drop=True)
+
+# Remove sold date as all are in 2021 and 2022. Contains many NaN and not and 2 year span is not an important feature for housing
+data = data.drop('prev_sold_date', axis=1)
+
+# Remove NaN values
+data.dropna(inplace=True)
+
+# Make categorical variables of City and State numerical
+data['city'] = pd.factorize(data['city'])[0]
+data['state'] = pd.factorize(data['state'])[0]
+
+print(len(data))
 data.head()
