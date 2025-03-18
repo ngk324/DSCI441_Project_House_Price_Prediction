@@ -33,7 +33,7 @@ After installation or opening on Google Colab, one can simply run all on the cod
 
 ## Datasets
 - The ZHVI data comes from [this](https://www.kaggle.com/datasets/paultimothymooney/zillow-house-price-data?select=Sale_Prices_City.csv) Kaggle dataset.
-  - This dataset in csv format contains multiple different housing information data, such as per USA City or US State, by number of bedrooms, and Median Price or ZVHI. The range of dates is monthly from January 1996 to March 2020.
+  - This dataset in csv format contains multiple different housing information data, such as Median Price and ZHVI, and is broken up by per USA City or US State and by number of bedrooms. The range of dates is monthly from January 1996 to March 2020.
   -  The data used is the City ZHVI for all sized homes. 
 - The Unemployment Rate data comes from [this](https://www.kaggle.com/datasets/axeltorbenson/unemployment-data-19482021) Kaggle Dataset
   - This dataset in csv format contains unemployment rates overall, and for various demographic group, broken up by age and sex, monthly from 1948 to 2021.
