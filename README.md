@@ -73,6 +73,10 @@ Ordinary least squares regression, Lasso regression, and Ridge Regression are al
 
 Future work will include Random Forest Regression and Neural Network Regressor implementation and results.
 
+**Polynomial Features (degree = 2)**: Improves the model by capturing nonlinear relationships and increasing flexibility. Effects OLS, Lasso, and Ridge differently due to their regularization properties.
+
+**Feature Scaling**: Ensures all features contribute equally to the model and improves the performance of Ridge and Lasso. Features are transformed to be on a similar scale, so regularization penalty is applied equally. This allows model to learn more accurate and interpretable coefficients and helps with numerical stability and convergence.
+
 ![Lasso Regression Alpha Tuning](img/lasso_alpha.png)
 
 Alpha parameter tuning yielded that the best alpha for Lasso Regression for this task is 50.
