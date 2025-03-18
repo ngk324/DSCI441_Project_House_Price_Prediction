@@ -34,6 +34,7 @@ from sklearn.linear_model import Ridge
 from sklearn.linear_model import Lasso
 from sklearn.metrics import mean_squared_error, mean_absolute_percentage_error, mean_absolute_error
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import StandardScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
@@ -360,15 +361,24 @@ y_train = train['ZHVI']
 # add constant
 X_train = sm.add_constant(X_train)
 
-# Fit OLS model
-model = sm.OLS(y_train, X_train)
-results = model.fit()
-
 # Prediction test
 X_test = test[['Year', 'Month', 'TimeIndex','Unemployment Rate', 'CPI','Interest Rate', 'GDP Growth']]
 X_test = sm.add_constant(X_test)
 
-predictions = results.predict(X_test)
+# add polynomial features and scale
+scaler = StandardScaler()
+poly = PolynomialFeatures(degree=2)
+X_train_poly = poly.fit_transform(X_train)
+X_test_poly = poly.transform(X_test)
+
+X_train_scaled = scaler.fit_transform(X_train_poly)
+X_test_scaled = scaler.transform(X_test_poly)
+
+# Fit OLS model
+model = sm.OLS(y_train, X_train_scaled)
+results = model.fit()
+
+predictions = results.predict(X_test_scaled)
 test['Predicted_ZHVI'] = predictions
 
 y_test = test['ZHVI']
@@ -377,11 +387,11 @@ OLS_pred = test['Predicted_ZHVI']
 
 # model evaluation
 mse = mean_squared_error(y_test, y_pred)
-print(f"Mean Squared Error (MSE): {mse}")
+print(f"OLS Mean Squared Error (MSE): {mse}")
 mape = mean_absolute_percentage_error(y_test, y_pred)
-print("Mean Absolute Percentage Error:", mape)
+print("OLS Mean Absolute Percentage Error:", mape)
 MAE = mean_absolute_error(y_test, y_pred)
-print("Mean Absolute Error:", MAE)
+print("OLS Mean Absolute Error:", MAE)
 
 # Plot truth vs prediction
 plt.figure(figsize=(18, 6))
@@ -391,7 +401,7 @@ plt.xlabel('Year')
 plt.ylabel('Price')
 x_ticks = np.arange(0, 90, 6)
 plt.xticks(x_ticks)
-plt.title('Time Series Plot: Truth vs Predicted Price')
+plt.title('Time Series Plot: Truth vs OLS Predicted ZHVI')
 plt.legend(loc='upper left')
 plt.show()
 
@@ -403,16 +413,25 @@ test = full_df[(full_df['Year'] > 2013) | ((full_df['Year'] == 2014) & (full_df[
 X_train = train[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI','Interest Rate', 'GDP Growth']]
 y_train = train['ZHVI']
 
-# Fit Lasso regression model
-alpha = 100  # Regularization strength (you can tune this hyperparameter)
-lasso_model = Lasso(alpha=alpha)
-lasso_model.fit(X_train, y_train)
-
 # Prepare test data for prediction
 X_test = test[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI','Interest Rate', 'GDP Growth']]
 
+# add polynomial features and scale
+scaler = StandardScaler()
+poly = PolynomialFeatures(degree=2)
+X_train_poly = poly.fit_transform(X_train)
+X_test_poly = poly.transform(X_test)
+
+X_train_scaled = scaler.fit_transform(X_train_poly)
+X_test_scaled = scaler.transform(X_test_poly)
+
+# Fit Lasso regression model
+alpha = 1
+lasso_model = Lasso(alpha=alpha)
+lasso_model.fit(X_train_scaled, y_train)
+
 # Predict
-predictions = lasso_model.predict(X_test)
+predictions = lasso_model.predict(X_test_scaled)
 test['Predicted_ZHVI'] = predictions
 
 # Model evaluation
@@ -421,21 +440,21 @@ y_pred = test['Predicted_ZHVI']
 lasso_pred = test['Predicted_ZHVI']
 
 mse = mean_squared_error(y_test, y_pred)
-print(f"Mean Squared Error (MSE): {mse}")
+print(f"Lasso Mean Squared Error (MSE): {mse}")
 mape = mean_absolute_percentage_error(y_test, y_pred)
-print("Mean Absolute Percentage Error:", mape)
+print("Lasso Mean Absolute Percentage Error:", mape)
 MAE = mean_absolute_error(y_test, y_pred)
-print("Mean Absolute Error:", MAE)
+print(" Mean Absolute Error:", MAE)
 
 # Plot truth vs prediction
 plt.figure(figsize=(18, 6))
 plt.plot(test['Year-Month'], test['ZHVI'], color='red', label='Truth (ZHVI)')
 plt.plot(test['Year-Month'], test['Predicted_ZHVI'], color='blue', label='Predicted ZHVI')
-plt.xlabel('Year')
-plt.ylabel('Price')
+plt.xlabel('Date')
+plt.ylabel('ZHVI')
 x_ticks = np.arange(0, 90, 6)
 plt.xticks(x_ticks)
-plt.title('Time Series Plot: Truth vs Predicted Price')
+plt.title('Time Series Plot: Truth vs Lasso Regression Predicted ZHVI')
 plt.legend(loc='upper left')
 plt.show()
 
@@ -443,19 +462,29 @@ plt.show()
 train = full_df[(full_df['Year'] < 2014) | ((full_df['Year'] == 2013) & (full_df['Month'] <= 12))]
 test = full_df[(full_df['Year'] > 2013) | ((full_df['Year'] == 2014) & (full_df['Month'] >= 1))]
 
+
 # Define features and target
 X_train = train[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI','Interest Rate', 'GDP Growth']]
 y_train = train['ZHVI']
 
-# Fit Ridge regression model
-alpha = 1
-ridge_model = Ridge(alpha=alpha)
-ridge_model.fit(X_train, y_train)
-
 X_test = test[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI','Interest Rate', 'GDP Growth']]
 
+# add polynomial features and scale
+scaler = StandardScaler()
+poly = PolynomialFeatures(degree=2)
+X_train_poly = poly.fit_transform(X_train)
+X_test_poly = poly.transform(X_test)
+
+X_train_scaled = scaler.fit_transform(X_train_poly)
+X_test_scaled = scaler.transform(X_test_poly)
+
+# Fit Ridge regression model
+alpha = 0.01
+ridge_model = Ridge(alpha=alpha)
+ridge_model.fit(X_train_scaled, y_train)
+
 # Predict
-predictions = ridge_model.predict(X_test)
+predictions = ridge_model.predict(X_test_scaled)
 test['Predicted_ZHVI'] = predictions
 
 # Model evaluation
@@ -464,34 +493,36 @@ y_pred = test['Predicted_ZHVI']
 ridge_pred = test['Predicted_ZHVI']
 
 mse = mean_squared_error(y_test, y_pred)
-print(f"Mean Squared Error (MSE): {mse}")
+print(f"RR Mean Squared Error (MSE): {mse}")
 mape = mean_absolute_percentage_error(y_test, y_pred)
-print("Mean Absolute Percentage Error:", mape)
+print("RR Mean Absolute Percentage Error:", mape)
 MAE = mean_absolute_error(y_test, y_pred)
-print("Mean Absolute Error:", MAE)
+print("RR Mean Absolute Error:", MAE)
 
 # Plot truth vs prediction
 plt.figure(figsize=(18, 6))
 plt.plot(test['Year-Month'], test['ZHVI'], color='red', label='Truth (ZHVI)')
 plt.plot(test['Year-Month'], test['Predicted_ZHVI'], color='blue', label='Predicted ZHVI')
 plt.xlabel('Year')
-plt.ylabel('Price')
+plt.ylabel('ZHVI')
 x_ticks = np.arange(0, 90, 6)
 plt.xticks(x_ticks)
-plt.title('Time Series Plot: Truth vs Predicted Price')
+plt.title('Time Series Plot: Truth vs Ridge Regression Predicted ZHVI')
 plt.legend(loc='upper left')
 plt.show()
 
 plt.figure(figsize=(18, 6))
-plt.plot(test['Year-Month'], test['ZHVI'],color='black')
-plt.plot(test['Year-Month'], OLS_pred, color='blue')
-plt.plot(test['Year-Month'], lasso_pred, color='green')
-plt.plot(test['Year-Month'], ridge_pred, color='red')
+plt.plot(test['Year-Month'], test['ZHVI'], color='black', label='True ZHVI')
+plt.plot(test['Year-Month'], OLS_pred, color='blue', label='OLS Predicted ZHVI')
+plt.plot(test['Year-Month'], lasso_pred, color='green', label='Lasso Predicted ZHVI')
+plt.plot(test['Year-Month'], ridge_pred, color='red', label='Ridge Predicted ZHVI')
 
-
-plt.xlabel('Year')
-plt.ylabel('Price')
-x_ticks = np.arange(0,86,6)
+plt.xlabel('Date')
+plt.ylabel('ZHVI')
+x_ticks = np.arange(0, 80, 6)
 plt.xticks(x_ticks)
-plt.title('Time Series Plot')
+plt.title('Time Series Plot: True vs Predicted ZHVI')
+
+plt.legend(loc='upper left')
+
 plt.show()
