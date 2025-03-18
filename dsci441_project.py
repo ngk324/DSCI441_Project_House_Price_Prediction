@@ -360,21 +360,22 @@ test = full_df[(full_df['Year'] > 2013) | ((full_df['Year'] == 2014) & (full_df[
 X_train = train[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI', 'Interest Rate', 'GDP Growth']]
 y_train = train['ZHVI']
 
-# add constant
-X_train = sm.add_constant(X_train)
-
 # Prediction test
 X_test = test[['Year', 'Month', 'TimeIndex','Unemployment Rate', 'CPI','Interest Rate', 'GDP Growth']]
-X_test = sm.add_constant(X_test)
 
 # add polynomial features and scale
 scaler = StandardScaler()
 poly = PolynomialFeatures(degree=2)
+
 X_train_poly = poly.fit_transform(X_train)
 X_test_poly = poly.transform(X_test)
 
 X_train_scaled = scaler.fit_transform(X_train_poly)
 X_test_scaled = scaler.transform(X_test_poly)
+
+# add constant
+X_train_scaled = sm.add_constant(X_train_scaled)
+X_test_scaled = sm.add_constant(X_test_scaled)
 
 # Fit OLS model
 model = sm.OLS(y_train, X_train_scaled)
@@ -391,11 +392,11 @@ OLS_pred = test['Predicted_ZHVI']
 rmse = math.sqrt(mean_squared_error(y_test, y_pred))
 print(f"OLS Root Mean Squared Error (RMSE): {rmse}")
 mape = mean_absolute_percentage_error(y_test, y_pred)
-print("OLS Mean Absolute Percentage Error:", mape)
+print("OLS Mean Absolute Percentage Error(MAPE):", mape)
 MAE = mean_absolute_error(y_test, y_pred)
-print("OLS Mean Absolute Error:", MAE)
+print("OLS Mean Absolute Error(MAE):", MAE)
 r2 = r2_score(y_pred,y_test)
-print(f"OLS R-squared: {r2}")
+print(f"OLS R-squared(R^2): {r2}")
 
 # Plot truth vs prediction
 plt.figure(figsize=(18, 6))
@@ -403,10 +404,35 @@ plt.plot(test['Year-Month'], test['ZHVI'], color='red', label='Truth (ZHVI)')
 plt.plot(test['Year-Month'], test['Predicted_ZHVI'], color='blue', label='Predicted ZHVI')
 plt.xlabel('Year')
 plt.ylabel('Price')
-x_ticks = np.arange(0, 90, 6)
+x_ticks = np.arange(0, 80, 6)
 plt.xticks(x_ticks)
 plt.title('Time Series Plot: Truth vs OLS Predicted ZHVI')
 plt.legend(loc='upper left')
+plt.show()
+
+# Get feature names
+feature_names = ['const'] + list(poly.get_feature_names_out(X_train.columns))
+
+# Create dataframe to store coefficients and feature names
+coefficients_df = pd.DataFrame({
+    'Feature': feature_names,
+    'Coefficient': results.params
+})
+
+# sort features by coeff magnitude
+coefficients_df['Absolute_Coefficient'] = np.abs(coefficients_df['Coefficient'])
+coefficients_df = coefficients_df.sort_values(by='Absolute_Coefficient', ascending=False)
+
+print("Sorted Top 10 OLS Regression Coefficients:")
+print(coefficients_df[0:10])
+
+# plot coeff
+plt.figure(figsize=(10, 6))
+plt.barh(coefficients_df['Feature'][:10], coefficients_df['Absolute_Coefficient'][:10], color='skyblue')
+plt.xlabel('Absolute Coefficient Value')
+plt.ylabel('Feature')
+plt.title('Top 10 Most Important Features (OLS Regression)')
+plt.gca().invert_yaxis()
 plt.show()
 
 # Split data into training and test
@@ -457,6 +483,16 @@ for alpha in alphas:
 print("Lowest MAPE:", lowest_mape)
 print("Lowest Alpha:", lowest_alpha)
 
+# Plot hyperparameter tuning
+plt.plot(alphas, results, marker='o')
+plt.xscale('log')
+
+plt.xlabel('Alpha (log scale)')
+plt.ylabel('MAPE')
+plt.title('Lasso Regression Alpha Tuning - MAPE vs Alpha (Logarithmic X-axis)')
+
+plt.show()
+
 alpha = lowest_alpha
 
 lasso_model = Lasso(alpha=alpha)
@@ -474,11 +510,11 @@ lasso_pred = test['Predicted_ZHVI']
 rmse = math.sqrt(mean_squared_error(y_test, y_pred))
 print(f"\n\nLasso Root Mean Squared Error (RMSE): {rmse}")
 mape = mean_absolute_percentage_error(y_test, y_pred)
-print("Lasso Mean Absolute Percentage Error:", mape)
+print("Lasso Mean Absolute Percentage Error (MAPE):", mape)
 MAE = mean_absolute_error(y_test, y_pred)
-print("Mean Absolute Error:", MAE)
+print("Mean Absolute Error (MAE):", MAE)
 r2 = r2_score(y_pred,y_test)
-print(f"R-squared: {r2}")
+print(f"R-squared(R^2): {r2}")
 
 # Plot truth vs prediction
 plt.figure(figsize=(18, 6))
@@ -486,20 +522,35 @@ plt.plot(test['Year-Month'], test['ZHVI'], color='red', label='Truth (ZHVI)')
 plt.plot(test['Year-Month'], test['Predicted_ZHVI'], color='blue', label='Predicted ZHVI')
 plt.xlabel('Date')
 plt.ylabel('ZHVI')
-x_ticks = np.arange(0, 86, 6)
+x_ticks = np.arange(0, 80, 6)
 plt.xticks(x_ticks)
 plt.title('Time Series Plot: Truth vs Lasso Regression Predicted ZHVI')
 plt.legend(loc='upper left')
 plt.show()
 
-# Plot hyperparameter tuning
-plt.plot(alphas, results, marker='o')
-plt.xscale('log')
+# Get feature names
+feature_names = poly.get_feature_names_out(X_train.columns)
 
-plt.xlabel('Alpha (log scale)')
-plt.ylabel('MAPE')
-plt.title('Lasso Regression Alpha Tuning - MAPE vs Alpha (Logarithmic X-axis)')
+# Create dataframe to store coefficients and feature names
+coefficients_df = pd.DataFrame({
+    'Feature': feature_names,
+    'Coefficient': lasso_model.coef_
+})
 
+# sort features by coeff magnitude
+coefficients_df['Absolute_Coefficient'] = np.abs(coefficients_df['Coefficient'])
+coefficients_df = coefficients_df.sort_values(by='Absolute_Coefficient', ascending=False)
+
+print("Sorted Top 10 Lasso Regression Coefficients:")
+print(coefficients_df[0:10])
+
+# plot coeff
+plt.figure(figsize=(10, 6))
+plt.barh(coefficients_df['Feature'][:10], coefficients_df['Absolute_Coefficient'][:10], color='skyblue')
+plt.xlabel('Absolute Coefficient Value')
+plt.ylabel('Feature')
+plt.title('Top 10 Most Important Features (Lasso Regression)')
+plt.gca().invert_yaxis()
 plt.show()
 
 # Split data into training and test
@@ -520,7 +571,6 @@ X_test_poly = poly.transform(X_test)
 
 X_train_scaled = scaler.fit_transform(X_train_poly)
 X_test_scaled = scaler.transform(X_test_poly)
-
 
 # Fit Ridge regression model
 alphas = [0.001,0.005,0.01, 0.05, 0.075, 0.1, 0.25, 0.35, 0.5, 1, 2, 3, 5, 10]
@@ -550,6 +600,16 @@ for alpha in alphas:
 print("Lowest MAPE:", lowest_mape)
 print("Lowest Alpha:", lowest_alpha)
 
+# Plot hyperparameter tuning
+plt.plot(alphas, results, marker='o')
+plt.xscale('log')
+
+plt.xlabel('Alpha (log scale)')
+plt.ylabel('MAPE')
+plt.title('Ridge Regression Alpha Tuning - MAPE vs Alpha (Logarithmic X-axis)')
+
+plt.show()
+
 alpha = lowest_alpha
 ridge_model = Ridge(alpha=alpha)
 ridge_model.fit(X_train_scaled, y_train)
@@ -566,11 +626,11 @@ ridge_pred = test['Predicted_ZHVI']
 rmse = math.sqrt(mean_squared_error(y_test, y_pred))
 print(f"\n\nRR Root Mean Squared Error (RMSE): {rmse}")
 mape = mean_absolute_percentage_error(y_test, y_pred)
-print("RR Mean Absolute Percentage Error:", mape)
+print("RR Mean Absolute Percentage Error(MAPE):", mape)
 MAE = mean_absolute_error(y_test, y_pred)
-print("RR Mean Absolute Error:", MAE)
+print("RR Mean Absolute Error(MAE):", MAE)
 r2 = r2_score(y_pred,y_test)
-print(f"R-squared: {r2}")
+print(f"R-squared(R^2): {r2}")
 
 # Plot truth vs prediction
 plt.figure(figsize=(18, 6))
@@ -578,20 +638,35 @@ plt.plot(test['Year-Month'], test['ZHVI'], color='red', label='Truth (ZHVI)')
 plt.plot(test['Year-Month'], test['Predicted_ZHVI'], color='blue', label='Predicted ZHVI')
 plt.xlabel('Year')
 plt.ylabel('ZHVI')
-x_ticks = np.arange(0, 86, 6)
+x_ticks = np.arange(0, 80, 6)
 plt.xticks(x_ticks)
 plt.title('Time Series Plot: Truth vs Ridge Regression Predicted ZHVI')
 plt.legend(loc='upper left')
 plt.show()
 
-# Plot hyperparameter tuning
-plt.plot(alphas, results, marker='o')
-plt.xscale('log')
+# Get feature names
+feature_names = poly.get_feature_names_out(X_train.columns)
 
-plt.xlabel('Alpha (log scale)')
-plt.ylabel('MAPE')
-plt.title('Ridge Regression Alpha Tuning - MAPE vs Alpha (Logarithmic X-axis)')
+# Create dataframe to store coefficients and feature names
+coefficients_df = pd.DataFrame({
+    'Feature': feature_names,
+    'Coefficient': ridge_model.coef_
+})
 
+# sort features by coeff magnitude
+coefficients_df['Absolute_Coefficient'] = np.abs(coefficients_df['Coefficient'])
+coefficients_df = coefficients_df.sort_values(by='Absolute_Coefficient', ascending=False)
+
+print("Sorted Top 10 Ridge Regression Coefficients:")
+print(coefficients_df[0:10])
+
+# plot coeff
+plt.figure(figsize=(10, 6))
+plt.barh(coefficients_df['Feature'][:10], coefficients_df['Absolute_Coefficient'][:10], color='skyblue')
+plt.xlabel('Absolute Coefficient Value')
+plt.ylabel('Feature')
+plt.title('Top 10 Most Important Features (Ridge Regression)')
+plt.gca().invert_yaxis()
 plt.show()
 
 plt.figure(figsize=(18, 6))
