@@ -13,6 +13,8 @@ Unemployment rate dataset comes from https://www.kaggle.com/datasets/axeltorbens
 Inflation Rate(CPI) Dataset https://www.kaggle.com/datasets/varpit94/us-inflation-data-updated-till-may-2021
 
 Interest rate dataset https://www.kaggle.com/datasets/raoofiali/us-interest-rate-weekly
+
+GDP Growth Rate dataset https://www.kaggle.com/datasets/rajkumarpandey02/economy-of-the-united-states
 """
 
 !pip install ydata-profiling
