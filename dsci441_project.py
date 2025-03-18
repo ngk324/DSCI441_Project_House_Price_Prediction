@@ -244,9 +244,9 @@ print(full_df)
 fig, ax1 = plt.subplots(figsize=(18, 6))
 
 # Plot the first ZHVI dataset
-ax1.plot(full_df['Year-Month'], full_df['ZHVI'], color='blue', label='ZHI')
-ax1.set_xlabel('Year')
-ax1.set_ylabel('ZHI Price', color='blue')
+ax1.plot(full_df['Year-Month'], full_df['ZHVI'], color='blue', label='ZHVI')
+ax1.set_xlabel('DATE')
+ax1.set_ylabel('ZHVI', color='blue')
 ax1.tick_params(axis='y', labelcolor='blue')
 
 # Create a second axis sharing the same x-axis
@@ -260,7 +260,7 @@ ax2.tick_params(axis='y', labelcolor='red')
 x_ticks = np.arange(0, 290, 24)
 ax1.set_xticks(x_ticks)
 
-plt.title('Time Series Plot of ZHI Price and Unemployment Rate Over Time')
+plt.title('Time Series Plot of ZHVI and Unemployment Rate Over Time')
 
 # legend
 ax1.legend(loc='upper left')
@@ -272,9 +272,9 @@ plt.show()
 fig, ax1 = plt.subplots(figsize=(18, 6))
 
 # Plot the first ZHVI dataset
-ax1.plot(full_df['Year-Month'], full_df['ZHVI'], color='blue', label='ZHI')
-ax1.set_xlabel('Year')
-ax1.set_ylabel('ZHI Price', color='blue')
+ax1.plot(full_df['Year-Month'], full_df['ZHVI'], color='blue', label='ZHVI')
+ax1.set_xlabel('DATE')
+ax1.set_ylabel('ZHVI', color='blue')
 ax1.tick_params(axis='y', labelcolor='blue')
 
 # Create a second axis sharing the same x-axis
@@ -288,7 +288,7 @@ ax2.tick_params(axis='y', labelcolor='red')
 x_ticks = np.arange(0, 290, 24)
 ax1.set_xticks(x_ticks)
 
-plt.title('Time Series Plot of ZHI Price and CPI Over Time')
+plt.title('Time Series Plot of ZHVI and CPI Over Time')
 
 # legend
 ax1.legend(loc='upper left')
@@ -300,23 +300,23 @@ plt.show()
 fig, ax1 = plt.subplots(figsize=(18, 6))
 
 # Plot the first ZHVI dataset
-ax1.plot(full_df['Year-Month'], full_df['ZHVI'], color='blue', label='ZHI')
-ax1.set_xlabel('Year')
-ax1.set_ylabel('ZHI Price', color='blue')
+ax1.plot(full_df['Year-Month'], full_df['ZHVI'], color='blue', label='ZHVI')
+ax1.set_xlabel('DATE')
+ax1.set_ylabel('ZVHI', color='blue')
 ax1.tick_params(axis='y', labelcolor='blue')
 
 # Create a second axis sharing the same x-axis
 ax2 = ax1.twinx()
 
 # Plot the Unemployment Rate data
-ax2.plot(ir_df['TimeIndex'], ir_df['Value'], color='red', label='CPI')
+ax2.plot(ir_df['TimeIndex'], ir_df['Value'], color='red', label='Interest Rate')
 ax2.set_ylabel('Interest Rate', color='red')
 ax2.tick_params(axis='y', labelcolor='red')
 
 x_ticks = np.arange(0, 290, 24)
 ax1.set_xticks(x_ticks)
 
-plt.title('Time Series Plot of ZHI Price and Interest Rate Over Time')
+plt.title('Time Series Plot of ZHVI and Interest Rate Over Time')
 
 # legend
 ax1.legend(loc='upper left')
@@ -328,23 +328,23 @@ plt.show()
 fig, ax1 = plt.subplots(figsize=(18, 6))
 
 # Plot the first ZHVI dataset
-ax1.plot(full_df['Year-Month'], full_df['ZHVI'], color='blue', label='ZHI')
-ax1.set_xlabel('Year')
-ax1.set_ylabel('ZHI Price', color='blue')
+ax1.plot(full_df['Year-Month'], full_df['ZHVI'], color='blue', label='ZHVI')
+ax1.set_xlabel('DATE')
+ax1.set_ylabel('ZHVI', color='blue')
 ax1.tick_params(axis='y', labelcolor='blue')
 
 # Create a second axis sharing the same x-axis
 ax2 = ax1.twinx()
 
 # Plot the Unemployment Rate data
-ax2.plot(ir_df['TimeIndex'], gdp_df['GDP Growth'], color='red', label='CPI')
+ax2.plot(ir_df['TimeIndex'], gdp_df['GDP Growth'], color='red', label='GDP Growth Rate')
 ax2.set_ylabel('GDP Growth Rate', color='red')
 ax2.tick_params(axis='y', labelcolor='red')
 
 x_ticks = np.arange(0, 290, 24)
 ax1.set_xticks(x_ticks)
 
-plt.title('Time Series Plot of ZHI Price and GDP Growth Rate Over Time')
+plt.title('Time Series Plot of ZHVI and GDP Growth Rate Over Time')
 
 # legend
 ax1.legend(loc='upper left')
