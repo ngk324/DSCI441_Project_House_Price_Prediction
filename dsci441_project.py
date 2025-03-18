@@ -168,6 +168,41 @@ un_df['Month'] = un_df['date'].dt.month
 un_df['TimeIndex'] = (un_df['Year'] - un_df['Year'].min()) * 12 + (un_df['Month'] - un_df['Month'].min())
 un_df.drop('date',axis=1,inplace=True)
 
+"""Adding GDP Growth %"""
+
+# Download data
+path = kagglehub.dataset_download("rajkumarpandey02/economy-of-the-united-states")
+
+print("Path to dataset files:", path)
+
+print("Files in the dataset:")
+for root, dirs, files in os.walk(path):
+    for file in files:
+        print(os.path.join(root, file))
+
+csv_path = os.path.join(path, "Economy of the United States.csv")
+gdp_df = pd.read_csv(csv_path)
+
+print(gdp_df.head())
+print(gdp_df.tail())
+
+gdp_df = gdp_df[gdp_df['Year'] >= 1996]
+gdp_df = gdp_df[gdp_df['Year'] <= 2020]
+gdp_df = gdp_df.reset_index(drop=True)
+gdp_df = gdp_df[['Year','GDP growth (real)']]
+
+gdp_df['GDP growth (real)'] = gdp_df['GDP growth (real)'].str.replace('%', '')
+gdp_df['GDP Growth'] = pd.to_numeric(gdp_df['GDP growth (real)'])
+gdp_df.drop('GDP growth (real)',axis=1,inplace=True)
+
+# add instance for each month
+gdp_df = gdp_df.loc[gdp_df.index.repeat(12)].reset_index(drop=True)
+gdp_df['Month'] = (gdp_df.groupby('Year').cumcount() % 12) + 1
+gdp_df = gdp_df.iloc[:-9]
+
+print(gdp_df.head())
+print(gdp_df.tail())
+
 # reshape data to have rows correspond to each time, with features being the time, price, and unemployment rate
 reshaped_data = []
 
@@ -196,6 +231,7 @@ full_df = reshaped_df.sort_values(by=['Year', 'Month']).reset_index(drop=True)
 full_df['Unemployment Rate'] = un_df['unrate']
 full_df['CPI'] = filtered_cpi_df['CPI']
 full_df['Interest Rate'] = ir_df['Value']
+full_df['GDP Growth'] = gdp_df['GDP Growth']
 print("Reshaped DataFrame:")
 print(full_df)
 
@@ -283,12 +319,40 @@ ax2.legend(loc='upper right')
 
 plt.show()
 
+# Create figure and primary axis
+fig, ax1 = plt.subplots(figsize=(18, 6))
+
+# Plot the first ZHVI dataset
+ax1.plot(full_df['Year-Month'], full_df['ZHVI'], color='blue', label='ZHI')
+ax1.set_xlabel('Year')
+ax1.set_ylabel('ZHI Price', color='blue')
+ax1.tick_params(axis='y', labelcolor='blue')
+
+# Create a second axis sharing the same x-axis
+ax2 = ax1.twinx()
+
+# Plot the Unemployment Rate data
+ax2.plot(ir_df['TimeIndex'], gdp_df['GDP Growth'], color='red', label='CPI')
+ax2.set_ylabel('GDP Growth Rate', color='red')
+ax2.tick_params(axis='y', labelcolor='red')
+
+x_ticks = np.arange(0, 290, 24)
+ax1.set_xticks(x_ticks)
+
+plt.title('Time Series Plot of ZHI Price and GDP Growth Rate Over Time')
+
+# legend
+ax1.legend(loc='upper left')
+ax2.legend(loc='upper right')
+
+plt.show()
+
 # Split data into training and test
 train = full_df[(full_df['Year'] < 2014) | ((full_df['Year'] == 2013) & (full_df['Month'] <= 12))]
 test = full_df[(full_df['Year'] > 2013) | ((full_df['Year'] == 2014) & (full_df['Month'] >= 1))]
 
 # Define features and target
-X_train = train[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI', 'Interest Rate']]
+X_train = train[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI', 'Interest Rate', 'GDP Growth']]
 y_train = train['ZHVI']
 
 # add constant
@@ -299,7 +363,7 @@ model = sm.OLS(y_train, X_train)
 results = model.fit()
 
 # Prediction test
-X_test = test[['Year', 'Month', 'TimeIndex','Unemployment Rate', 'CPI','Interest Rate']]
+X_test = test[['Year', 'Month', 'TimeIndex','Unemployment Rate', 'CPI','Interest Rate', 'GDP Growth']]
 X_test = sm.add_constant(X_test)
 
 predictions = results.predict(X_test)
@@ -334,16 +398,16 @@ train = full_df[(full_df['Year'] < 2014) | ((full_df['Year'] == 2013) & (full_df
 test = full_df[(full_df['Year'] > 2013) | ((full_df['Year'] == 2014) & (full_df['Month'] >= 1))]
 
 # Define features and target
-X_train = train[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI','Interest Rate']]
+X_train = train[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI','Interest Rate', 'GDP Growth']]
 y_train = train['ZHVI']
 
 # Fit Lasso regression model
-alpha = 10  # Regularization strength (you can tune this hyperparameter)
+alpha = 100  # Regularization strength (you can tune this hyperparameter)
 lasso_model = Lasso(alpha=alpha)
 lasso_model.fit(X_train, y_train)
 
 # Prepare test data for prediction
-X_test = test[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI','Interest Rate']]
+X_test = test[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI','Interest Rate', 'GDP Growth']]
 
 # Predict
 predictions = lasso_model.predict(X_test)
@@ -378,7 +442,7 @@ train = full_df[(full_df['Year'] < 2014) | ((full_df['Year'] == 2013) & (full_df
 test = full_df[(full_df['Year'] > 2013) | ((full_df['Year'] == 2014) & (full_df['Month'] >= 1))]
 
 # Define features and target
-X_train = train[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI','Interest Rate']]
+X_train = train[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI','Interest Rate', 'GDP Growth']]
 y_train = train['ZHVI']
 
 # Fit Ridge regression model
@@ -386,7 +450,7 @@ alpha = 1
 ridge_model = Ridge(alpha=alpha)
 ridge_model.fit(X_train, y_train)
 
-X_test = test[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI','Interest Rate']]
+X_test = test[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI','Interest Rate', 'GDP Growth']]
 
 # Predict
 predictions = ridge_model.predict(X_test)
