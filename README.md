@@ -7,9 +7,6 @@ The Zillow Home Value Index (ZHVI) is a seasonally adjusted measure of the typic
 ---
 
 ## Table of Contents
-
-- [DSCI 441 Project - Forecasting Zillow Home Value Index(ZHVI)](#dsci-441-project---forecasting-zillow-home-value-indexzhvi)
-        - [By Nicolas Kozachuk](#by-nicolas-kozachuk)
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
   - [Usage](#usage)
