@@ -19,7 +19,7 @@ The Zillow Home Value Index (ZHVI) is a seasonally adjusted measure of the typic
 
 ## Installation
 
-For simplest installation, one can simply open the Jupyter Notebook in Google colab and run all. The code automatically download any neccessary libraries and datasets used.
+For simplest installation, one can simply open the Jupyter Notebook in Google colab and run all. The code will automatically download any neccessary libraries and datasets used.
 
 If one wants to run the code locally, one can retrieve the code by running 
 ```bash
@@ -29,7 +29,7 @@ cd DSCI441_Project_House_Price_Prediction
 ```
 
 ## Usage
-After installation or opening on Google Colab, one can simply run all on the code. The datasets will be automatically downloaded from Kaggle and used.
+After installation or opening on Google Colab, one can simply run all on the code. The datasets will be automatically downloaded from Kaggle and used. If running local, one can simply run the python file using their standard method for running Python code. 
 
 ## Datasets
 - The ZHVI data comes from [this](https://www.kaggle.com/datasets/paultimothymooney/zillow-house-price-data?select=Sale_Prices_City.csv) Kaggle dataset.
