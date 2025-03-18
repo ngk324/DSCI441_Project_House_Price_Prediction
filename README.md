@@ -55,15 +55,22 @@ The city of focus is New York City, as it is the largest city in the USA. The da
 - **Unemployment Rate**: *the percentage of people in the labor force who are unemployed. A key economic indicator that reflects the health of a nation's job market and economy*
  ![ZHVI and Unemployment Rate Over Time](img/zhvi_unem.png)
 
+It can be seen that there is a clear inverse relationship between the ZHVI and the unemployment rate. This makes sense as when unemployment increases, the average person will have less money and the housing market will decline.
+
 - **Consumer Price Index(CPI)**: *measure of the average change over time in the prices paid by consumers for a representative basket of consumer goods and services. The CPI measures inflation as experienced by consumers in their day-to-day living expenses.*
 ![ZHVI and CPI Over Time](img/zhvi_cpi.png)
+
+The overall trend of the ZHVI and CPI are both linearly increasing, and at about the same rate.
 
 - **Gross Domestic Product(GDP) Growth Rate**: *measures the percentage change in a country's GDP over a specific period, typically a year, indicating the rate at which an economy is expanding or contracting.*
 ![ZHVI and GDP Growth Rate Over Time](img/zhvi_gdp.png)
 
+There is no clear visual overall relationship between ZHVI and GDP growth rate, but one should note that for the most part, the CPI is positive when the ZHVI is increasing, and the CPI is negative when the ZHVI is negative.
+
 - **Interest Rate**: *the cost of borrowing money, expressed as a percentage of the principal amount borrowed. Changes in interest rates, set by central banks, influence borrowing costs, consumer spending, and overall economic activity.*
 ![ZHVI and Interest Rate Over Time](img/zhvi_ir.png)
 
+There is no clear visual overall relationship between ZVHI and Interest rate.
 
 
 
