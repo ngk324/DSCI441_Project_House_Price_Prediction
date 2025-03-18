@@ -61,10 +61,22 @@ The features used for this model are the monthly
 
 The city of focus is New York City, as it is the largest city in the USA. The data in the range of January 1996 to December 2012 is used as inputs to train the model, and the data in the range of January 2013 to March of 2020 is used for prediction. 
 
+![ZHVI and Unemployment Rate Over Time](img/zhvi_unem.png)
+![ZHVI and CPI Over Time](img/zhvi_cpi.png)
+![ZHVI and GDP Growth Rate Over Time](img/zhvi_GDP.png)
+![ZHVI and Interest Rate Over Time](img/zhvi_ir.png)
+
+
+
 ## Methodology
 Ordinary least squares regression, Lasso regression, and Ridge Regression are all performed and compared. Alpha parameter tuning is performed for Lasso regression and Ridge Regression to find the optimal alpha values.
 
 Future work will include Random Forest Regression and Neural Network Regressor implementation and results.
+
+![Lasso Regression Alpha Tuning](img/lasso_alpha.png)
+
+![Ridge Regression Alpha Tuning](img/ridge_alpha.png)
+
 
 ## Results
 
