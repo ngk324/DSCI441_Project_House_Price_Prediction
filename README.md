@@ -51,9 +51,9 @@ After installation or opening on Google Colab, one can simply run all on the cod
 
 ## Features
 The features used for this model are the monthly
-- *Zillow Home Value Index(ZHVI)*: Zillow's created measure of the typical home value and market changes across a given region and housing type
+- **Zillow Home Value Index(ZHVI)**: *Zillow's created measure of the typical home value and market changes across a given region and housing type.*
   
-- Unemployment Rate: the percentage of people in the labor force who are unemployed. A key economic indicator that reflects the health of a nation's job market and economy
+- **Unemployment Rate**: *the percentage of people in the labor force who are unemployed. A key economic indicator that reflects the health of a nation's job market and economy*
  ![ZHVI and Unemployment Rate Over Time](img/zhvi_unem.png)
 
 - Consumer Price Index(CPI): measure of the average change over time in the prices paid by consumers for a representative basket of consumer goods and services. The CPI measures inflation as experienced by consumers in their day-to-day living expenses
