@@ -72,7 +72,9 @@ The city of focus is New York City, as it is the largest city in the USA. The da
 Ordinary least squares regression, Lasso regression, and Ridge Regression are all performed and compared. Alpha parameter tuning is performed for Lasso regression and Ridge Regression to find the optimal alpha values.
 
 Future work will include Random Forest Regression and Neural Network Regressor implementation and results.
+
 **Feature Engineering**
+
 - **Polynomial Features (degree = 2)**: Improves the model by capturing nonlinear relationships and increasing flexibility. Effects OLS, Lasso, and Ridge differently due to their regularization properties.
 
 - **Feature Scaling**: Ensures all features contribute equally to the model and improves the performance of Ridge and Lasso. Features are transformed to be on a similar scale, so regularization penalty is applied equally. This allows model to learn more accurate and interpretable coefficients and helps with numerical stability and convergence.
