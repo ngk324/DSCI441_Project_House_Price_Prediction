@@ -7,6 +7,8 @@ The Zillow Home Value Index (ZHVI) is a seasonally adjusted measure of the typic
 ---
 
 ## Table of Contents
+- [DSCI 441 Project - Forecasting Zillow Home Value Index(ZHVI)](#dsci-441-project---forecasting-zillow-home-value-indexzhvi)
+        - [By Nicolas Kozachuk](#by-nicolas-kozachuk)
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
   - [Usage](#usage)
@@ -68,8 +70,8 @@ Future work will include Random Forest Regression and Neural Network Regressor i
 
 | Model | RMSE    | MAPE    | MAE     | R^2     |
 |-------|---------|---------|---------|---------|
-|OLS   |      |             
-|Ridge |3.5e+4|    4.82%    | 2.89e+4| 0.847 |
+|OLS   |  9.2e+4    | 13.43% | 8.03e+4 | 0.301|           
+|Ridge |3.46e+4|    4.82%    | 2.89e+4| 0.847 |
 |Lasso | 4.4e+4    | 5.49% |   3.40e+4 | 0.785 |
 
-![MAPE Comparison of each Regression method](img/comparison_plot.jpg)
+![MAPE Comparison of each Regression method](img/comparison_plot.png)
