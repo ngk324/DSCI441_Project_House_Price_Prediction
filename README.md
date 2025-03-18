@@ -7,8 +7,6 @@ The Zillow Home Value Index (ZHVI) is a seasonally adjusted measure of the typic
 ---
 
 ## Table of Contents
-- [DSCI 441 Project - Forecasting Zillow Home Value Index(ZHVI)](#dsci-441-project---forecasting-zillow-home-value-indexzhvi)
-        - [By Nicolas Kozachuk](#by-nicolas-kozachuk)
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
   - [Usage](#usage)
@@ -63,7 +61,7 @@ The city of focus is New York City, as it is the largest city in the USA. The da
 
 ![ZHVI and Unemployment Rate Over Time](img/zhvi_unem.png)
 ![ZHVI and CPI Over Time](img/zhvi_cpi.png)
-![ZHVI and GDP Growth Rate Over Time](img/zhvi_GDP.png)
+![ZHVI and GDP Growth Rate Over Time](img/zhvi_gdp.png)
 ![ZHVI and Interest Rate Over Time](img/zhvi_ir.png)
 
 
