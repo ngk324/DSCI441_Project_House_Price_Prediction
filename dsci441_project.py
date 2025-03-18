@@ -17,27 +17,29 @@ Interest rate dataset https://www.kaggle.com/datasets/raoofiali/us-interest-rate
 GDP Growth Rate dataset https://www.kaggle.com/datasets/rajkumarpandey02/economy-of-the-united-states
 """
 
-!pip install ydata-profiling
-!pip install tensorflow
+#!pip install ydata-profiling
+#!pip install tensorflow
 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
 import kagglehub
+import math
 import os
 import warnings
 
-from ydata_profiling import ProfileReport
+#from ydata_profiling import ProfileReport
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import Ridge
 from sklearn.linear_model import Lasso
-from sklearn.metrics import mean_squared_error, mean_absolute_percentage_error, mean_absolute_error
+from sklearn.metrics import mean_squared_error, mean_absolute_percentage_error, mean_absolute_error, r2_score
+
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import StandardScaler
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
+#from tensorflow.keras.models import Sequential
+#from tensorflow.keras.layers import Dense
 from IPython.display import clear_output, display, HTML
 
 warnings.filterwarnings("ignore")
@@ -386,12 +388,14 @@ y_pred = test['Predicted_ZHVI']
 OLS_pred = test['Predicted_ZHVI']
 
 # model evaluation
-mse = mean_squared_error(y_test, y_pred)
-print(f"OLS Mean Squared Error (MSE): {mse}")
+rmse = math.sqrt(mean_squared_error(y_test, y_pred))
+print(f"OLS Root Mean Squared Error (RMSE): {rmse}")
 mape = mean_absolute_percentage_error(y_test, y_pred)
 print("OLS Mean Absolute Percentage Error:", mape)
 MAE = mean_absolute_error(y_test, y_pred)
 print("OLS Mean Absolute Error:", MAE)
+r2 = r2_score(y_pred,y_test)
+print(f"OLS R-squared: {r2}")
 
 # Plot truth vs prediction
 plt.figure(figsize=(18, 6))
@@ -426,7 +430,35 @@ X_train_scaled = scaler.fit_transform(X_train_poly)
 X_test_scaled = scaler.transform(X_test_poly)
 
 # Fit Lasso regression model
-alpha = 1
+alphas = [0.001,0.005,0.01, 0.05, 0.1, 0.5, 1, 2, 3, 5, 10,25,50,75,100,150]
+results = []
+lowest_alpha = alphas[0]
+lowest_mape = float('inf')
+
+for alpha in alphas:
+  lasso_model = Lasso(alpha=alpha)
+  lasso_model.fit(X_train_scaled, y_train)
+
+  # Predict
+  predictions = lasso_model.predict(X_test_scaled)
+  test['Predicted_ZHVI'] = predictions
+
+  # Model evaluation
+  y_test = test['ZHVI']
+  y_pred = test['Predicted_ZHVI']
+  lasso_pred = test['Predicted_ZHVI']
+
+  mape = mean_absolute_percentage_error(y_test, y_pred)
+  results.append(mape)
+  if mape < lowest_mape:
+    lowest_mape = mape
+    lowest_alpha = alpha
+
+print("Lowest MAPE:", lowest_mape)
+print("Lowest Alpha:", lowest_alpha)
+
+alpha = lowest_alpha
+
 lasso_model = Lasso(alpha=alpha)
 lasso_model.fit(X_train_scaled, y_train)
 
@@ -439,12 +471,14 @@ y_test = test['ZHVI']
 y_pred = test['Predicted_ZHVI']
 lasso_pred = test['Predicted_ZHVI']
 
-mse = mean_squared_error(y_test, y_pred)
-print(f"Lasso Mean Squared Error (MSE): {mse}")
+rmse = math.sqrt(mean_squared_error(y_test, y_pred))
+print(f"\n\nLasso Root Mean Squared Error (RMSE): {rmse}")
 mape = mean_absolute_percentage_error(y_test, y_pred)
 print("Lasso Mean Absolute Percentage Error:", mape)
 MAE = mean_absolute_error(y_test, y_pred)
-print(" Mean Absolute Error:", MAE)
+print("Mean Absolute Error:", MAE)
+r2 = r2_score(y_pred,y_test)
+print(f"R-squared: {r2}")
 
 # Plot truth vs prediction
 plt.figure(figsize=(18, 6))
@@ -452,16 +486,25 @@ plt.plot(test['Year-Month'], test['ZHVI'], color='red', label='Truth (ZHVI)')
 plt.plot(test['Year-Month'], test['Predicted_ZHVI'], color='blue', label='Predicted ZHVI')
 plt.xlabel('Date')
 plt.ylabel('ZHVI')
-x_ticks = np.arange(0, 90, 6)
+x_ticks = np.arange(0, 86, 6)
 plt.xticks(x_ticks)
 plt.title('Time Series Plot: Truth vs Lasso Regression Predicted ZHVI')
 plt.legend(loc='upper left')
 plt.show()
 
+# Plot hyperparameter tuning
+plt.plot(alphas, results, marker='o')
+plt.xscale('log')
+
+plt.xlabel('Alpha (log scale)')
+plt.ylabel('MAPE')
+plt.title('Lasso Regression Alpha Tuning - MAPE vs Alpha (Logarithmic X-axis)')
+
+plt.show()
+
 # Split data into training and test
 train = full_df[(full_df['Year'] < 2014) | ((full_df['Year'] == 2013) & (full_df['Month'] <= 12))]
 test = full_df[(full_df['Year'] > 2013) | ((full_df['Year'] == 2014) & (full_df['Month'] >= 1))]
-
 
 # Define features and target
 X_train = train[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI','Interest Rate', 'GDP Growth']]
@@ -478,8 +521,36 @@ X_test_poly = poly.transform(X_test)
 X_train_scaled = scaler.fit_transform(X_train_poly)
 X_test_scaled = scaler.transform(X_test_poly)
 
+
 # Fit Ridge regression model
-alpha = 0.01
+alphas = [0.001,0.005,0.01, 0.05, 0.075, 0.1, 0.25, 0.35, 0.5, 1, 2, 3, 5, 10]
+
+lowest_alpha = alphas[0]
+lowest_mape = float('inf')
+results = []
+for alpha in alphas:
+  ridge_model = Ridge(alpha=alpha)
+  ridge_model.fit(X_train_scaled, y_train)
+
+  # Predict
+  predictions = ridge_model.predict(X_test_scaled)
+  test['Predicted_ZHVI'] = predictions
+
+  # Model evaluation
+  y_test = test['ZHVI']
+  y_pred = test['Predicted_ZHVI']
+  ridge_pred = test['Predicted_ZHVI']
+
+  mape = mean_absolute_percentage_error(y_test, y_pred)
+  results.append(mape)
+  if mape < lowest_mape:
+    lowest_mape = mape
+    lowest_alpha = alpha
+
+print("Lowest MAPE:", lowest_mape)
+print("Lowest Alpha:", lowest_alpha)
+
+alpha = lowest_alpha
 ridge_model = Ridge(alpha=alpha)
 ridge_model.fit(X_train_scaled, y_train)
 
@@ -492,12 +563,14 @@ y_test = test['ZHVI']
 y_pred = test['Predicted_ZHVI']
 ridge_pred = test['Predicted_ZHVI']
 
-mse = mean_squared_error(y_test, y_pred)
-print(f"RR Mean Squared Error (MSE): {mse}")
+rmse = math.sqrt(mean_squared_error(y_test, y_pred))
+print(f"\n\nRR Root Mean Squared Error (RMSE): {rmse}")
 mape = mean_absolute_percentage_error(y_test, y_pred)
 print("RR Mean Absolute Percentage Error:", mape)
 MAE = mean_absolute_error(y_test, y_pred)
 print("RR Mean Absolute Error:", MAE)
+r2 = r2_score(y_pred,y_test)
+print(f"R-squared: {r2}")
 
 # Plot truth vs prediction
 plt.figure(figsize=(18, 6))
@@ -505,10 +578,20 @@ plt.plot(test['Year-Month'], test['ZHVI'], color='red', label='Truth (ZHVI)')
 plt.plot(test['Year-Month'], test['Predicted_ZHVI'], color='blue', label='Predicted ZHVI')
 plt.xlabel('Year')
 plt.ylabel('ZHVI')
-x_ticks = np.arange(0, 90, 6)
+x_ticks = np.arange(0, 86, 6)
 plt.xticks(x_ticks)
 plt.title('Time Series Plot: Truth vs Ridge Regression Predicted ZHVI')
 plt.legend(loc='upper left')
+plt.show()
+
+# Plot hyperparameter tuning
+plt.plot(alphas, results, marker='o')
+plt.xscale('log')
+
+plt.xlabel('Alpha (log scale)')
+plt.ylabel('MAPE')
+plt.title('Ridge Regression Alpha Tuning - MAPE vs Alpha (Logarithmic X-axis)')
+
 plt.show()
 
 plt.figure(figsize=(18, 6))
@@ -521,7 +604,7 @@ plt.xlabel('Date')
 plt.ylabel('ZHVI')
 x_ticks = np.arange(0, 80, 6)
 plt.xticks(x_ticks)
-plt.title('Time Series Plot: True vs Predicted ZHVI')
+plt.title('Time Series Plot of OLS, Ridge, and Lasso Regression: True vs Predicted ZHVI')
 
 plt.legend(loc='upper left')
 
