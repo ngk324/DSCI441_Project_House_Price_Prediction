@@ -51,18 +51,23 @@ After installation or opening on Google Colab, one can simply run all on the cod
 
 ## Features
 The features used for this model are the monthly
-- ZHVI
+- Zillow Home Value Index(ZHVI): Zillow's created measure of the typical home value and market changes across a given region and housing type
+  
 - Unemployment Rate
-- Consumer Price Index(CPI)
-- Gross Domestic Product(GDP) Growth Rate
-- Interest Rate
+ ![ZHVI and Unemployment Rate Over Time](img/zhvi_unem.png)
+
+- Consumer Price Index(CPI): measure of the average change over time in the prices paid by consumers for a representative basket of consumer goods and services. The CPI measures inflation as experienced by consumers in their day-to-day living expenses
+![ZHVI and CPI Over Time](img/zhvi_cpi.png)
+
+- Gross Domestic Product(GDP) Growth Rate: measures the percentage change in a country's GDP over a specific period, typically a year, indicating the rate at which an economy is expanding or contracting.
+![ZHVI and GDP Growth Rate Over Time](img/zhvi_gdp.png)
+
+- Interest Rate: the cost of borrowing money, expressed as a percentage of the principal amount borrowed. Changes in interest rates, set by central banks, influence borrowing costs, consumer spending, and overall economic activity. 
+![ZHVI and Interest Rate Over Time](img/zhvi_ir.png)
+
 
 The city of focus is New York City, as it is the largest city in the USA. The data in the range of January 1996 to December 2012 is used as inputs to train the model, and the data in the range of January 2013 to March of 2020 is used for prediction. 
 
-![ZHVI and Unemployment Rate Over Time](img/zhvi_unem.png)
-![ZHVI and CPI Over Time](img/zhvi_cpi.png)
-![ZHVI and GDP Growth Rate Over Time](img/zhvi_gdp.png)
-![ZHVI and Interest Rate Over Time](img/zhvi_ir.png)
 
 
 
