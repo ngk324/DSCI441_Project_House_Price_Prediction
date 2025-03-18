@@ -86,7 +86,7 @@ Alpha parameter tuning yielded that the best alpha for Ridge Regression for this
 
 | Model | RMSE    | MAPE    | MAE     | R^2     |
 |-------|---------|---------|---------|---------|
-|OLS   |  1.31e+5    | 18.53% | 1.12e+54 | -0.143|           
+|OLS   |  1.31e+5    | 18.53% | 1.12e+5 | -0.143|           
 |Ridge |3.46e+4|    4.82%    | 2.89e+4| 0.847 |
 |Lasso | 4.4e+4    | 5.49% |   3.40e+4 | 0.785 |
 
