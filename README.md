@@ -2,7 +2,7 @@
 # DSCI 441 Project - Forecasting Zillow Home Value Index(ZHVI) 
 ##### By Nicolas Kozachuk
 
-The Zillow Home Value Index (ZHVI) is a seasonally adjusted measure of the typical home value and market changes across a given region and housing type. It reflects the value of homes in the 35th to 65th percentile range. This project uses monthly ZHVI time series data from 1996 to 2020, as well as numerous economial features to predict how future ZVHI values. Various regression prediction techniques will be implemented and compared.
+The Zillow Home Value Index (ZHVI) is a seasonally adjusted measure of the typical home value and market changes across a given region and housing type. This project uses monthly ZHVI time series data from 1996 to 2020, as well as numerous economial features to predict future ZVHI values. Various regression prediction techniques will be implemented and compared.
 
 ---
 
