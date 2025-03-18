@@ -49,7 +49,7 @@ After installation or opening on Google Colab, one can simply run all on the cod
   - The data used is the GDP growth rate each year from 1996 to 2020. 
 
 ## Features
-The city of focus is New York City, as it is the largest city in the USA. The data in the range of January 1996 to December 2012 is used as inputs to train the model, and the data in the range of January 2013 to March of 2020 is used for prediction. The features used for this model are the monthly
+The city of focus is New York City, as it is the largest city in the USA. The data used as the input is the data in the range of January 1996 to December 2012, thus the data in the range of January 2013 to March 2020 is used for prediction. The features used for this model are the monthly values.
 - **Zillow Home Value Index(ZHVI)**: *Zillow's created measure of the typical home value and market changes across a given region and housing type.*
   
 - **Unemployment Rate**: *the percentage of people in the labor force who are unemployed. A key economic indicator that reflects the health of a nation's job market and economy*
