@@ -56,13 +56,13 @@ The features used for this model are the monthly
 - **Unemployment Rate**: *the percentage of people in the labor force who are unemployed. A key economic indicator that reflects the health of a nation's job market and economy*
  ![ZHVI and Unemployment Rate Over Time](img/zhvi_unem.png)
 
-- Consumer Price Index(CPI): measure of the average change over time in the prices paid by consumers for a representative basket of consumer goods and services. The CPI measures inflation as experienced by consumers in their day-to-day living expenses
+- **Consumer Price Index(CPI)**: *measure of the average change over time in the prices paid by consumers for a representative basket of consumer goods and services. The CPI measures inflation as experienced by consumers in their day-to-day living expenses.*
 ![ZHVI and CPI Over Time](img/zhvi_cpi.png)
 
-- Gross Domestic Product(GDP) Growth Rate: measures the percentage change in a country's GDP over a specific period, typically a year, indicating the rate at which an economy is expanding or contracting.
+- **Gross Domestic Product(GDP) Growth Rate**: *measures the percentage change in a country's GDP over a specific period, typically a year, indicating the rate at which an economy is expanding or contracting.*
 ![ZHVI and GDP Growth Rate Over Time](img/zhvi_gdp.png)
 
-- Interest Rate: the cost of borrowing money, expressed as a percentage of the principal amount borrowed. Changes in interest rates, set by central banks, influence borrowing costs, consumer spending, and overall economic activity. 
+- **Interest Rate**: *the cost of borrowing money, expressed as a percentage of the principal amount borrowed. Changes in interest rates, set by central banks, influence borrowing costs, consumer spending, and overall economic activity.*
 ![ZHVI and Interest Rate Over Time](img/zhvi_ir.png)
 
 
