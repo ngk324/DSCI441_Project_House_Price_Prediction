@@ -36,14 +36,14 @@ After installation or opening on Google Colab, one can simply run all on the cod
   - This dataset in csv format contains multiple different housing information data, such as Median Price and ZHVI, and is broken up by per USA City or US State and by number of bedrooms. The range of dates is monthly from January 1996 to March 2020.
   -  The data used is the City ZHVI for all sized homes. 
 - The Unemployment Rate data comes from [this](https://www.kaggle.com/datasets/axeltorbenson/unemployment-data-19482021) Kaggle Dataset
-  - This dataset in csv format contains unemployment rates overall, and for various demographic group, broken up by age and sex, monthly from 1948 to 2021.
+  - This dataset in csv format contains unemployment rates overall, as well as for various demographic group, broken up by age and sex, with monthly entries from 1948 to 2021.
   - The data used is the overall unemployment rate by month from January 1996 to March 2020, in order to match the ZHVI data range.
 - The Inflation Rate data comes from [this](https://www.kaggle.com/datasets/varpit94/us-inflation-data-updated-till-may-2021) Kaggle dataset.
   - This dataset in csv format contains the monthly Consumer Price Index(which is directly correlated to inflation) from January 1912 to January 2021.
   - The data used is the montly CPI from January 1996 to March 2020, in order to match the ZHVI data range.
 - The Interest Rate data comes from [this](https://www.kaggle.com/datasets/raoofiali/us-interest-rate-weekly) Kaggle dataset.
-  - This dataset is in xlsx format and contains the weekly interest rate from 1971 to 2024.
-  - The data used is the weekly Interest Rate data(averaged over each month), in order to get montly Interest Rate from January 1996 to March 2020, in order to match the ZHVI data range
+  - This dataset in xlsx format and contains the weekly interest rate from 1971 to 2024.
+  - The data used is the weekly Interest Rate data(averaged over each month), in order to get montly Interest Rate from January 1996 to March 2020, in order to match the ZHVI data range.
 - The GDP Growth Rate data comes from [this](https://www.kaggle.com/datasets/rajkumarpandey02/economy-of-the-united-states) Kaggle dataset.
   - This dataset contains various GDP statistics, as well as the interest rate each year from 1980 to 2024.
   - The data used is the GDP growth rate each year from 1996 to 2020. 
