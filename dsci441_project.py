@@ -507,14 +507,14 @@ y_test = test['ZHVI']
 y_pred = test['Predicted_ZHVI']
 lasso_pred = test['Predicted_ZHVI']
 
-rmse = math.sqrt(mean_squared_error(y_test, y_pred))
-print(f"\n\nLasso Root Mean Squared Error (RMSE): {rmse}")
-mape = mean_absolute_percentage_error(y_test, y_pred)
-print("Lasso Mean Absolute Percentage Error (MAPE):", mape)
-MAE = mean_absolute_error(y_test, y_pred)
-print("Mean Absolute Error (MAE):", MAE)
-r2 = r2_score(y_pred,y_test)
-print(f"R-squared(R^2): {r2}")
+lasso_rmse = math.sqrt(mean_squared_error(y_test, y_pred))
+print(f"\n\nLasso Root Mean Squared Error (RMSE): {lasso_rmse}")
+lasso_mape = mean_absolute_percentage_error(y_test, y_pred)
+print("Lasso Mean Absolute Percentage Error (MAPE):", lasso_mape)
+lasso_MAE = mean_absolute_error(y_test, y_pred)
+print("Mean Absolute Error (MAE):", lasso_MAE)
+lasso_r2 = r2_score(y_pred,y_test)
+print(f"R-squared(R^2): {lasso_r2}")
 
 # Plot truth vs prediction
 plt.figure(figsize=(18, 6))
@@ -623,14 +623,14 @@ y_test = test['ZHVI']
 y_pred = test['Predicted_ZHVI']
 ridge_pred = test['Predicted_ZHVI']
 
-rmse = math.sqrt(mean_squared_error(y_test, y_pred))
-print(f"\n\nRR Root Mean Squared Error (RMSE): {rmse}")
-mape = mean_absolute_percentage_error(y_test, y_pred)
-print("RR Mean Absolute Percentage Error(MAPE):", mape)
-MAE = mean_absolute_error(y_test, y_pred)
-print("RR Mean Absolute Error(MAE):", MAE)
-r2 = r2_score(y_pred,y_test)
-print(f"R-squared(R^2): {r2}")
+ridge_rmse = math.sqrt(mean_squared_error(y_test, y_pred))
+print(f"\n\nRR Root Mean Squared Error (RMSE): {ridge_rmse}")
+ridge_mape = mean_absolute_percentage_error(y_test, y_pred)
+print("RR Mean Absolute Percentage Error(MAPE):", ridge_mape)
+ridge_MAE = mean_absolute_error(y_test, y_pred)
+print("RR Mean Absolute Error(MAE):", ridge_MAE)
+ridge_r2 = r2_score(y_pred,y_test)
+print(f"R-squared(R^2): {ridge_r2}")
 
 # Plot truth vs prediction
 plt.figure(figsize=(18, 6))
@@ -686,6 +686,98 @@ plt.legend(loc='upper left')
 plt.show()
 
 """milestone 2"""
+
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, BatchNormalization, Dropout, Activation
+from tensorflow.keras.optimizers import Adam
+import random
+import tensorflow as tf
+import numpy as np
+
+# set seed for easy reproducibility of different configurations
+random.seed(158)
+
+
+# preprocess data
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Build neural network
+model = Sequential([
+    Dense(128, activation='relu', input_shape=(X_train_scaled.shape[1],)),
+    Dropout(0.2),
+    Dense(64, activation='relu'),
+    Dropout(0.2),
+    Dense(32, activation='relu'),
+    Dropout(0.2),
+    Dense(1)
+])
+
+optimizer = Adam(learning_rate=0.001)
+model.compile(optimizer=optimizer, loss='mse', metrics=['mae'])
+
+# Train the model
+history = model.fit(
+    X_train_scaled, y_train,
+    epochs=100,
+    batch_size=32,
+    verbose=1
+)
+
+# Predictions
+nn_predictions = model.predict(X_test_scaled).flatten()
+test['NN_Predicted_ZHVI'] = nn_predictions
+
+# Model evaluation
+nn_rmse = math.sqrt(mean_squared_error(y_test, nn_predictions))
+print(f"Neural Network Root Mean Squared Error (RMSE): {nn_rmse}")
+nn_mape = mean_absolute_percentage_error(y_test, nn_predictions)
+print("Neural Network Mean Absolute Percentage Error (MAPE):", nn_mape)
+nn_mae = mean_absolute_error(y_test, nn_predictions)
+print("Neural Network Mean Absolute Error (MAE):", nn_mae)
+nn_r2 = r2_score(y_test, nn_predictions)
+print(f"Neural Network R-squared (R^2): {nn_r2}")
+
+# Plot truth vs prediction
+plt.figure(figsize=(18, 6))
+plt.plot(test['Year-Month'], test['ZHVI'], color='red', label='Truth (ZHVI)')
+plt.plot(test['Year-Month'], test['NN_Predicted_ZHVI'], color='purple', label='Neural Network Predicted ZHVI')
+plt.xlabel('Date')
+plt.ylabel('ZHVI')
+x_ticks = np.arange(0, 80, 6)
+plt.xticks(x_ticks)
+plt.title('Time Series Plot: Truth vs Neural Network Predicted ZHVI')
+plt.legend(loc='upper left')
+plt.show()
+
+# Combined Model Comparison Plot
+plt.figure(figsize=(18, 6))
+plt.plot(test['Year-Month'], test['ZHVI'], color='black', label='True ZHVI')
+plt.plot(test['Year-Month'], OLS_pred, color='blue', label='OLS Predicted ZHVI')
+plt.plot(test['Year-Month'], lasso_pred, color='green', label='Lasso Predicted ZHVI')
+plt.plot(test['Year-Month'], ridge_pred, color='red', label='Ridge Predicted ZHVI')
+plt.plot(test['Year-Month'], test['NN_Predicted_ZHVI'], color='purple', label='Neural Network Predicted ZHVI')
+
+plt.xlabel('Date')
+plt.ylabel('ZHVI')
+x_ticks = np.arange(0, 80, 6)
+plt.xticks(x_ticks)
+plt.title('Time Series Plot: True vs All Model Predictions')
+plt.legend(loc='upper left')
+plt.show()
+
+# Model Performance Comparison Table
+model_comparison = pd.DataFrame({
+    'Model': ['OLS', 'Lasso', 'Ridge', 'Neural Network'],
+    'RMSE': [rmse, lasso_rmse, ridge_rmse, nn_rmse],
+    'MAPE': [mape, lasso_mape, ridge_mape, nn_mape],
+    'MAE': [MAE, lasso_MAE, ridge_MAE, nn_mae],
+    'R2': [r2, lasso_r2, ridge_r2, nn_r2]
+})
+
+print("\nModel Performance Comparison:")
+print(model_comparison.sort_values('RMSE'))
 
 !pip install -q streamlit
 
