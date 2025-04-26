@@ -687,6 +687,144 @@ plt.show()
 
 """milestone 2"""
 
+!pip install keras-tuner
+
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import EarlyStopping
+import keras_tuner as kt
+import math
+import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error, mean_absolute_percentage_error, mean_absolute_error, r2_score
+
+# Preprocess data
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Define the model building function for Keras Tuner
+def build_model(hp):
+
+    model = Sequential()
+
+    # Tune the number of units in the first Dense layer
+    model.add(Dense(
+        units=hp.Int('units_1', min_value=64, max_value=256, step=64),
+        activation='relu',
+        input_shape=(X_train_scaled.shape[1],)
+    ))
+    model.add(Dropout(
+        rate=hp.Float('dropout_1', min_value=0.0, max_value=0.5, step=0.1)
+    ))
+
+    # Tune the number of hidden layers (1-3)
+    for i in range(hp.Int('num_layers', 1, 3)):
+        model.add(Dense(
+            units=hp.Int(f'units_{i+2}', min_value=32, max_value=128, step=32),
+            activation='relu')
+        )
+        model.add(Dropout(
+            rate=hp.Float(f'dropout_{i+2}', min_value=0.0, max_value=0.5, step=0.1)
+        ))
+
+    model.add(Dense(1))
+
+    # Tune the learning rate
+    learning_rate = hp.Choice('learning_rate', values=[1e-2, 1e-3, 1e-4])
+
+    optimizer = Adam(learning_rate=learning_rate)
+    model.compile(optimizer=optimizer, loss='mse', metrics=['mae'])
+
+    return model
+
+# Set up the tuner
+tuner = kt.RandomSearch(
+    build_model,
+    objective='val_loss',
+    max_trials=20,
+    executions_per_trial=2,
+    directory='keras_tuner',
+    project_name='zhvi_prediction'
+)
+
+# Early stopping callback
+early_stopping = EarlyStopping(
+    monitor='val_loss',
+    patience=10,
+    restore_best_weights=True
+)
+
+# Perform hyperparameter search
+tuner.search(
+    X_train_scaled, y_train,
+    epochs=100,
+    batch_size=32,
+    validation_split=0.2,
+    callbacks=[early_stopping],
+    verbose=1
+)
+
+# Get the best hyperparameters
+best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
+
+print(f"""
+The hyperparameter search is complete. The optimal hyperparameters are:
+- Units in first layer: {best_hps.get('units_1')}
+- Number of hidden layers: {best_hps.get('num_layers')}
+- Learning rate: {best_hps.get('learning_rate')}
+- Dropout rate (first layer): {best_hps.get('dropout_1')}
+""")
+
+# Build the model with the best hyperparameters
+best_model = tuner.hypermodel.build(best_hps)
+
+# Train the best model
+history = best_model.fit(
+    X_train_scaled, y_train,
+    epochs=100,
+    batch_size=32,
+    validation_split=0.2,
+    callbacks=[early_stopping],
+    verbose=1
+)
+
+# Plot training history
+plt.figure(figsize=(12, 6))
+plt.plot(history.history['loss'], label='Training Loss')
+plt.plot(history.history['val_loss'], label='Validation Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss (MSE)')
+plt.title('Neural Network Training History')
+plt.legend()
+plt.show()
+
+# Predictions
+nn_predictions = best_model.predict(X_test_scaled).flatten()
+test['NN_Predicted_ZHVI'] = nn_predictions
+
+# Model evaluation
+nn_rmse = math.sqrt(mean_squared_error(y_test, nn_predictions))
+print(f"Neural Network Root Mean Squared Error (RMSE): {nn_rmse}")
+nn_mape = mean_absolute_percentage_error(y_test, nn_predictions)
+print("Neural Network Mean Absolute Percentage Error (MAPE):", nn_mape)
+nn_mae = mean_absolute_error(y_test, nn_predictions)
+print("Neural Network Mean Absolute Error (MAE):", nn_mae)
+nn_r2 = r2_score(y_test, nn_predictions)
+print(f"Neural Network R-squared (R^2): {nn_r2}")
+
+# Plot truth vs prediction
+plt.figure(figsize=(18, 6))
+plt.plot(test['Year-Month'], test['ZHVI'], color='red', label='Truth (ZHVI)')
+plt.plot(test['Year-Month'], test['NN_Predicted_ZHVI'], color='purple', label='Neural Network Predicted ZHVI')
+plt.xlabel('Date')
+plt.ylabel('ZHVI')
+x_ticks = np.arange(0, 80, 6)
+plt.xticks(x_ticks)
+plt.title('Time Series Plot: Truth vs Neural Network Predicted ZHVI (Optimized)')
+plt.legend(loc='upper left')
+plt.show()
+
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, BatchNormalization, Dropout, Activation
 from tensorflow.keras.optimizers import Adam
@@ -722,6 +860,7 @@ history = model.fit(
     X_train_scaled, y_train,
     epochs=100,
     batch_size=32,
+    validation_split=0.2,
     verbose=1
 )
 
@@ -778,6 +917,243 @@ model_comparison = pd.DataFrame({
 
 print("\nModel Performance Comparison:")
 print(model_comparison.sort_values('RMSE'))
+
+from sklearn.ensemble import RandomForestRegressor
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.optimizers import Adam
+from sklearn.model_selection import GridSearchCV
+
+# Random Forest Model
+
+# Split data into training and test (same as before)
+train = full_df[(full_df['Year'] < 2014) | ((full_df['Year'] == 2013) & (full_df['Month'] <= 12))]
+test = full_df[(full_df['Year'] > 2013) | ((full_df['Year'] == 2014) & (full_df['Month'] >= 1))]
+
+# Define features and target
+X_train = train[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI', 'Interest Rate', 'GDP Growth']]
+y_train = train['ZHVI']
+X_test = test[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI', 'Interest Rate', 'GDP Growth']]
+y_test = test['ZHVI']
+
+# add polynomial features and scale
+scaler = StandardScaler()
+poly = PolynomialFeatures(degree=2)
+X_train_poly = poly.fit_transform(X_train)
+X_test_poly = poly.transform(X_test)
+
+X_train_scaled = scaler.fit_transform(X_train_poly)
+X_test_scaled = scaler.transform(X_test_poly)
+
+# Hyperparameter tuning with GridSearchCV
+param_grid = {
+    'n_estimators': [100, 200, 300],
+    'max_depth': [None, 10, 20, 30],
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4]
+}
+
+rf = RandomForestRegressor(random_state=42)
+grid_search = GridSearchCV(estimator=rf, param_grid=param_grid,
+                          cv=5, n_jobs=-1, verbose=2, scoring='neg_mean_squared_error')
+grid_search.fit(X_train_scaled, y_train)
+
+# Best model
+best_rf = grid_search.best_estimator_
+print(f"Best Random Forest parameters: {grid_search.best_params_}")
+
+# Predictions
+rf_predictions = best_rf.predict(X_test_scaled)
+test['RF_Predicted_ZHVI'] = rf_predictions
+
+# Model evaluation
+rf_rmse = math.sqrt(mean_squared_error(y_test, rf_predictions))
+print(f"Random Forest Root Mean Squared Error (RMSE): {rf_rmse}")
+rf_mape = mean_absolute_percentage_error(y_test, rf_predictions)
+print("Random Forest Mean Absolute Percentage Error (MAPE):", rf_mape)
+rf_mae = mean_absolute_error(y_test, rf_predictions)
+print("Random Forest Mean Absolute Error (MAE):", rf_mae)
+rf_r2 = r2_score(y_test, rf_predictions)
+print(f"Random Forest R-squared (R^2): {rf_r2}")
+
+# Feature importance
+feature_importance = pd.DataFrame({
+    'Feature': pd.DataFrame(X_train_scaled).columns,
+    'Importance': best_rf.feature_importances_
+}).sort_values('Importance', ascending=False)
+
+print("\nRandom Forest Feature Importance:")
+print(feature_importance)
+
+# Plot feature importance
+plt.figure(figsize=(10, 6))
+plt.barh(feature_importance['Feature'], feature_importance['Importance'], color='skyblue')
+plt.xlabel('Importance Score')
+plt.ylabel('Feature')
+plt.title('Random Forest Feature Importance')
+plt.gca().invert_yaxis()
+plt.show()
+
+# Plot truth vs prediction
+plt.figure(figsize=(18, 6))
+plt.plot(test['Year-Month'], test['ZHVI'], color='red', label='Truth (ZHVI)')
+plt.plot(test['Year-Month'], test['RF_Predicted_ZHVI'], color='green', label='Random Forest Predicted ZHVI')
+plt.xlabel('Date')
+plt.ylabel('ZHVI')
+x_ticks = np.arange(0, 80, 6)
+plt.xticks(x_ticks)
+plt.title('Time Series Plot: Truth vs Random Forest Predicted ZHVI')
+plt.legend(loc='upper left')
+plt.show()
+
+# Optimized XGBoost Implementation with MAPE Focus
+
+import xgboost as xgb
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+from sklearn.model_selection import RandomizedSearchCV, TimeSeriesSplit
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from sklearn.metrics import mean_absolute_percentage_error
+import matplotlib.pyplot as plt
+import math
+
+# Feature Engineering Functions
+def create_features(df, target_col='ZHVI'):
+    # Create lag features
+    for lag in [1, 2, 3, 6, 12]:  # Multiple time horizons
+        df[f'{target_col}_lag_{lag}'] = df[target_col].shift(lag)
+
+    # Create rolling statistics
+    for window in [3, 6, 12]:
+        df[f'{target_col}_rolling_avg_{window}'] = df[target_col].rolling(window).mean()
+        df[f'{target_col}_rolling_std_{window}'] = df[target_col].rolling(window).std()
+
+    # Month/year indicators
+    df['month_sin'] = np.sin(2 * np.pi * df['Month']/12)
+    df['month_cos'] = np.cos(2 * np.pi * df['Month']/12)
+
+    return df
+
+# Data Preparation
+train = create_features(train.copy())
+test = create_features(test.copy())
+
+# Define features
+base_features = ['Year', 'Month', 'TimeIndex', 'Unemployment Rate',
+                'CPI', 'Interest Rate', 'GDP Growth', 'month_sin', 'month_cos']
+lag_features = [col for col in train.columns if 'lag_' in col or 'rolling_' in col]
+features = base_features + lag_features
+
+# Handle missing values from lag features
+X_train = train[features].dropna()
+y_train = train.loc[X_train.index, 'ZHVI']
+X_test = test[features].dropna()
+y_test = test.loc[X_test.index, 'ZHVI']
+
+# add polynomial features and scale
+scaler = StandardScaler()
+poly = PolynomialFeatures(degree=2)
+X_train_poly = poly.fit_transform(X_train)
+X_test_poly = poly.transform(X_test)
+X_train_scaled = scaler.fit_transform(X_train_poly)
+X_test_scaled = scaler.transform(X_test_poly)
+
+# XGBoost with Native API for MAPE Optimization
+def xgboost_mape_train(X_train, y_train, X_test, y_test, params):
+    # Convert to DMatrix format
+    dtrain = xgb.DMatrix(X_train, label=y_train)
+    dtest = xgb.DMatrix(X_test, label=y_test)
+
+    # Custom MAPE evaluation metric
+    def mape_eval(preds, dmatrix):
+        labels = dmatrix.get_label()
+        return 'mape', np.mean(np.abs((labels - preds) / (labels + 1e-6))) * 100
+
+    # Train model
+    model = xgb.train(
+        params,
+        dtrain,
+        num_boost_round=1000,
+        evals=[(dtrain, 'train'), (dtest, 'test')],
+        early_stopping_rounds=50,
+        feval=mape_eval,
+        verbose_eval=50
+    )
+    return model
+
+# Parameter Tuning with scikit-learn API
+param_grid = {
+    'max_depth': [3, 5, 7],
+    'learning_rate': [0.01, 0.05, 0.1],
+    'subsample': [0.8, 0.9, 1.0],
+    'colsample_bytree': [0.8, 0.9, 1.0],
+    'gamma': [0, 0.1, 0.2],
+    'min_child_weight': [1, 3, 5]
+}
+
+xgb_sklearn = xgb.XGBRegressor(
+    objective='reg:squarederror',
+    n_estimators=100,
+    random_state=42,
+    n_jobs=-1
+)
+
+tscv = TimeSeriesSplit(n_splits=3)
+search = RandomizedSearchCV(
+    estimator=xgb_sklearn,
+    param_distributions=param_grid,
+    n_iter=20,
+    cv=tscv,
+    scoring='neg_mean_absolute_percentage_error',
+    verbose=1,
+    n_jobs=-1,
+    random_state=42
+)
+
+search.fit(X_train_scaled, y_train)
+best_params = search.best_params_
+
+# Final Model Training with MAPE Focus
+final_params = {
+    **best_params,
+    'objective': 'reg:squarederror',
+    'seed': 158
+}
+
+# Train with native API
+xgb_model = xgboost_mape_train(
+    X_train_scaled, y_train,
+    X_test_scaled, y_test,
+    final_params
+)
+
+# Evaluation
+xgb_predictions = xgb_model.predict(xgb.DMatrix(X_test_scaled))
+test.loc[X_test.index, 'XGBoost_Predicted_ZHVI'] = xgb_predictions
+
+metrics = {
+    'RMSE': math.sqrt(mean_squared_error(y_test, xgb_predictions)),
+    'MAPE': mean_absolute_percentage_error(y_test, xgb_predictions),
+    'MAE': mean_absolute_error(y_test, xgb_predictions),
+    'R2': r2_score(y_test, xgb_predictions)
+}
+
+print("\nModel Performance:")
+for name, value in metrics.items():
+    print(f"{name}: {value:.4f}")
+
+# Plot truth vs prediction
+plt.figure(figsize=(18, 6))
+plt.plot(test['Year-Month'], test['ZHVI'], color='red', label='Truth (ZHVI)')
+plt.plot(test['Year-Month'], test['XGBoost_Predicted_ZHVI'], color='darkgreen', label='XGBoost Predicted ZHVI')
+plt.xlabel('Date')
+plt.ylabel('ZHVI')
+x_ticks = np.arange(0, 80, 6)
+plt.xticks(x_ticks)
+plt.title('Time Series Plot: Truth vs XGBoost Predicted ZHVI')
+plt.legend(loc='upper left')
+plt.show()
 
 !pip install -q streamlit
 
