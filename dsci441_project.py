@@ -352,6 +352,8 @@ ax2.legend(loc='upper right')
 
 plt.show()
 
+"""OLS Model"""
+
 # Split data into training and test
 train = full_df[(full_df['Year'] < 2014) | ((full_df['Year'] == 2013) & (full_df['Month'] <= 12))]
 test = full_df[(full_df['Year'] > 2013) | ((full_df['Year'] == 2014) & (full_df['Month'] >= 1))]
@@ -434,6 +436,8 @@ plt.ylabel('Feature')
 plt.title('Top 10 Most Important Features (OLS Regression)')
 plt.gca().invert_yaxis()
 plt.show()
+
+"""Lasso Regression Model"""
 
 # Split data into training and test
 train = full_df[(full_df['Year'] < 2014) | ((full_df['Year'] == 2013) & (full_df['Month'] <= 12))]
@@ -552,6 +556,8 @@ plt.ylabel('Feature')
 plt.title('Top 10 Most Important Features (Lasso Regression)')
 plt.gca().invert_yaxis()
 plt.show()
+
+"""Ridge Regression Model"""
 
 # Split data into training and test
 train = full_df[(full_df['Year'] < 2014) | ((full_df['Year'] == 2013) & (full_df['Month'] <= 12))]
@@ -688,15 +694,39 @@ plt.show()
 """milestone 2"""
 
 !pip install keras-tuner
+!pip install -q streamlit
+!npm install localtunnel
 
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.layers import Dense, BatchNormalization, Dropout, Activation
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping
+from sklearn.metrics import mean_squared_error, mean_absolute_percentage_error, mean_absolute_error, r2_score
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import GridSearchCV
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+from sklearn.model_selection import RandomizedSearchCV, TimeSeriesSplit
+from sklearn.linear_model import LinearRegression
+from tabulate import tabulate
+
+import tensorflow as tf
 import keras_tuner as kt
 import math
 import matplotlib.pyplot as plt
-from sklearn.metrics import mean_squared_error, mean_absolute_percentage_error, mean_absolute_error, r2_score
+import numpy as np
+import random
+import xgboost as xgb
+import statsmodels.api as sm
+import joblib
+import xgboost as xgb
+
+clear_output()
+
+"""DNN Model"""
+
+# Hyperparameter tuning
+
+random.seed(158)
 
 # Preprocess data
 scaler = StandardScaler()
@@ -825,16 +855,19 @@ plt.title('Time Series Plot: Truth vs Neural Network Predicted ZHVI (Optimized)'
 plt.legend(loc='upper left')
 plt.show()
 
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, BatchNormalization, Dropout, Activation
-from tensorflow.keras.optimizers import Adam
-import random
-import tensorflow as tf
-import numpy as np
+# Split data into training and test
+train = full_df[(full_df['Year'] < 2014) | ((full_df['Year'] == 2013) & (full_df['Month'] <= 12))]
+test = full_df[(full_df['Year'] > 2013) | ((full_df['Year'] == 2014) & (full_df['Month'] >= 1))]
+
+# Define features and target
+X_train = train[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI','Interest Rate', 'GDP Growth']]
+y_train = train['ZHVI']
+
+# Prepare test data for prediction
+X_test = test[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI','Interest Rate', 'GDP Growth']]
 
 # set seed for easy reproducibility of different configurations
 random.seed(158)
-
 
 # preprocess data
 scaler = StandardScaler()
@@ -864,6 +897,8 @@ history = model.fit(
     verbose=1
 )
 
+clear_output()
+
 # Predictions
 nn_predictions = model.predict(X_test_scaled).flatten()
 test['NN_Predicted_ZHVI'] = nn_predictions
@@ -890,41 +925,7 @@ plt.title('Time Series Plot: Truth vs Neural Network Predicted ZHVI')
 plt.legend(loc='upper left')
 plt.show()
 
-# Combined Model Comparison Plot
-plt.figure(figsize=(18, 6))
-plt.plot(test['Year-Month'], test['ZHVI'], color='black', label='True ZHVI')
-plt.plot(test['Year-Month'], OLS_pred, color='blue', label='OLS Predicted ZHVI')
-plt.plot(test['Year-Month'], lasso_pred, color='green', label='Lasso Predicted ZHVI')
-plt.plot(test['Year-Month'], ridge_pred, color='red', label='Ridge Predicted ZHVI')
-plt.plot(test['Year-Month'], test['NN_Predicted_ZHVI'], color='purple', label='Neural Network Predicted ZHVI')
-
-plt.xlabel('Date')
-plt.ylabel('ZHVI')
-x_ticks = np.arange(0, 80, 6)
-plt.xticks(x_ticks)
-plt.title('Time Series Plot: True vs All Model Predictions')
-plt.legend(loc='upper left')
-plt.show()
-
-# Model Performance Comparison Table
-model_comparison = pd.DataFrame({
-    'Model': ['OLS', 'Lasso', 'Ridge', 'Neural Network'],
-    'RMSE': [rmse, lasso_rmse, ridge_rmse, nn_rmse],
-    'MAPE': [mape, lasso_mape, ridge_mape, nn_mape],
-    'MAE': [MAE, lasso_MAE, ridge_MAE, nn_mae],
-    'R2': [r2, lasso_r2, ridge_r2, nn_r2]
-})
-
-print("\nModel Performance Comparison:")
-print(model_comparison.sort_values('RMSE'))
-
-from sklearn.ensemble import RandomForestRegressor
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.optimizers import Adam
-from sklearn.model_selection import GridSearchCV
-
-# Random Forest Model
+"""Random Forest Model"""
 
 # Split data into training and test (same as before)
 train = full_df[(full_df['Year'] < 2014) | ((full_df['Year'] == 2013) & (full_df['Month'] <= 12))]
@@ -941,6 +942,9 @@ scaler = StandardScaler()
 poly = PolynomialFeatures(degree=2)
 X_train_poly = poly.fit_transform(X_train)
 X_test_poly = poly.transform(X_test)
+
+# Get feature names from polynomial features
+feature_names = poly.get_feature_names_out(input_features=X_train.columns)
 
 X_train_scaled = scaler.fit_transform(X_train_poly)
 X_test_scaled = scaler.transform(X_test_poly)
@@ -978,7 +982,7 @@ print(f"Random Forest R-squared (R^2): {rf_r2}")
 
 # Feature importance
 feature_importance = pd.DataFrame({
-    'Feature': pd.DataFrame(X_train_scaled).columns,
+    'Feature': feature_names,
     'Importance': best_rf.feature_importances_
 }).sort_values('Importance', ascending=False)
 
@@ -1006,17 +1010,17 @@ plt.title('Time Series Plot: Truth vs Random Forest Predicted ZHVI')
 plt.legend(loc='upper left')
 plt.show()
 
-# Optimized XGBoost Implementation with MAPE Focus
+"""XGBoost Model"""
 
-import xgboost as xgb
-import numpy as np
-import pandas as pd
-from sklearn.preprocessing import StandardScaler, PolynomialFeatures
-from sklearn.model_selection import RandomizedSearchCV, TimeSeriesSplit
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from sklearn.metrics import mean_absolute_percentage_error
-import matplotlib.pyplot as plt
-import math
+# Split data into training and test (same as before)
+train = full_df[(full_df['Year'] < 2014) | ((full_df['Year'] == 2013) & (full_df['Month'] <= 12))]
+test = full_df[(full_df['Year'] > 2013) | ((full_df['Year'] == 2014) & (full_df['Month'] >= 1))]
+
+# Define features and target
+X_train = train[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI', 'Interest Rate', 'GDP Growth']]
+y_train = train['ZHVI']
+X_test = test[['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI', 'Interest Rate', 'GDP Growth']]
+y_test = test['ZHVI']
 
 # Feature Engineering Functions
 def create_features(df, target_col='ZHVI'):
@@ -1132,11 +1136,16 @@ xgb_model = xgboost_mape_train(
 xgb_predictions = xgb_model.predict(xgb.DMatrix(X_test_scaled))
 test.loc[X_test.index, 'XGBoost_Predicted_ZHVI'] = xgb_predictions
 
+xgb_rmse = math.sqrt(mean_squared_error(y_test, xgb_predictions))
+xgb_mape = mean_absolute_percentage_error(y_test, xgb_predictions)
+xgb_mae = mean_absolute_error(y_test, xgb_predictions)
+xgb_r2 = r2_score(y_test, xgb_predictions)
+
 metrics = {
-    'RMSE': math.sqrt(mean_squared_error(y_test, xgb_predictions)),
-    'MAPE': mean_absolute_percentage_error(y_test, xgb_predictions),
-    'MAE': mean_absolute_error(y_test, xgb_predictions),
-    'R2': r2_score(y_test, xgb_predictions)
+    'RMSE': xgb_rmse,
+    'MAPE': xgb_mape,
+    'MAE': xgb_mae,
+    'R2': xgb_r2
 }
 
 print("\nModel Performance:")
@@ -1155,18 +1164,267 @@ plt.title('Time Series Plot: Truth vs XGBoost Predicted ZHVI')
 plt.legend(loc='upper left')
 plt.show()
 
-!pip install -q streamlit
+"""Comparison of Models"""
 
-# Commented out IPython magic to ensure Python compatibility.
-# %%writefile app.py
-# 
-# import streamlit as st
-# 
-# st.write('Hello, *World!* :sunglasses:')
+# Combined Model Comparison Plot
+plt.figure(figsize=(18, 6))
+plt.plot(test['Year-Month'], test['ZHVI'], color='black', label='True ZHVI')
+plt.plot(test['Year-Month'], OLS_pred, color='pink', label='OLS Predicted ZHVI')
+plt.plot(test['Year-Month'], lasso_pred, color='green', label='Lasso Predicted ZHVI')
+plt.plot(test['Year-Month'], ridge_pred, color='red', label='Ridge Predicted ZHVI')
+plt.plot(test['Year-Month'], nn_predictions, color='purple', label='Neural Network Predicted ZHVI')
+plt.plot(test['Year-Month'], rf_predictions, color='orange', label='Random Forest Predicted ZHVI')
+plt.plot(test['Year-Month'], test['XGBoost_Predicted_ZHVI'], color='blue', label='XGBoost Predicted ZHVI')
 
-!npm install localtunnel
+
+plt.xlabel('Date')
+plt.ylabel('ZHVI')
+x_ticks = np.arange(0, 80, 6)
+plt.xticks(x_ticks)
+plt.title('Time Series Plot: True vs All Model Predictions')
+plt.legend(loc='upper left')
+plt.show()
+
+# Model Performance Comparison Table
+model_comparison = pd.DataFrame({
+    'Model': ['OLS', 'Lasso', 'Ridge', 'Neural Network', 'Random Forest', 'XGBoost'],
+    'RMSE': [rmse, lasso_rmse, ridge_rmse, nn_rmse, rf_rmse, xgb_rmse],
+    'MAPE': [mape, lasso_mape, ridge_mape, nn_mape, rf_mape, xgb_mape],
+    'MAE': [MAE, lasso_MAE, ridge_MAE, nn_mae, rf_mae, xgb_mae],
+    'R2': [r2, lasso_r2, ridge_r2, nn_r2, rf_r2, xgb_r2]
+})
+
+print("\nModel Performance Comparison:")
+print(model_comparison.sort_values('RMSE'))
+
+"""Ensemble Model"""
+
+# ensemble model
+original_features = ['Year', 'Month', 'TimeIndex', 'Unemployment Rate', 'CPI', 'Interest Rate', 'GDP Growth']
+
+# add polynomial features and scaling
+poly = PolynomialFeatures(degree=2, include_bias=False)
+X_train_poly = poly.fit_transform(X_train[original_features])
+X_test_poly = poly.transform(X_test[original_features])
+
+print("Number of polynomial features:", X_train_poly.shape[1])
+
+X_train_poly = np.column_stack([np.ones(X_train_poly.shape[0]), X_train_poly])  # Add bias column
+X_test_poly = np.column_stack([np.ones(X_test_poly.shape[0]), X_test_poly])
+
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train_poly)
+X_test_scaled = scaler.transform(X_test_poly)
+
+
+# model dictionary for ensemble
+trained_models = {
+    'Lasso': lasso_model,
+    'Ridge': ridge_model,
+    'Random Forest': best_rf,
+    'XGBoost': xgb_model
+}
+
+# Prediction function
+def get_predictions(model, X, model_type):
+    if model_type in ['Lasso', 'Ridge', 'Random Forest']:
+        if hasattr(model, 'n_features_in_'):
+            if X.shape[1] != model.n_features_in_:
+                raise ValueError(f"Feature mismatch! Model expects {model.n_features_in_} features but got {X.shape[1]}")
+
+    if model_type == 'XGBoost':
+        return model.predict(xgb.DMatrix(X))
+    elif model_type == 'Neural Network':
+        return model.predict(X).flatten()
+    else:
+        return model.predict(X)
+
+
+# Generate predictions
+predictions_train = {name: get_predictions(model, X_train_scaled, name)
+                    for name, model in trained_models.items()}
+predictions_test = {name: get_predictions(model, X_test_scaled, name)
+                   for name, model in trained_models.items()}
+
+# Create ensemble DataFrames
+ensemble_train = pd.DataFrame(predictions_train)
+ensemble_test = pd.DataFrame(predictions_test)
+ensemble_train['True_ZHVI'] = y_train.values
+ensemble_test['True_ZHVI'] = y_test.values
+
+def evaluate_predictions(name, y_true, y_pred):
+    return {
+        'Model': name,
+        'MAE': mean_absolute_error(y_true, y_pred),
+        'RMSE': math.sqrt(mean_squared_error(y_true, y_pred)),
+        'MAPE': mean_absolute_percentage_error(y_true, y_pred) * 100,
+        'R2': r2_score(y_true, y_pred)
+    }
+
+# Ensemble Comparison
+print("\n Ensemble Comparison")
+
+# Evaluate ensemble methods
+ensemble_results = []
+
+# Simple Average Ensemble
+simple_avg = ensemble_test.drop(columns=['True_ZHVI']).mean(axis=1)
+ensemble_results.append(evaluate_predictions(
+    'Simple Average', y_test, simple_avg
+))
+
+# Weighted Average Ensemble (weighted by inverse MAE)
+model_weights = {m: 1/mean_absolute_error(y_test, ensemble_test[m])
+                for m in trained_models}
+total_weight = sum(model_weights.values())
+weighted_avg = sum(ensemble_test[m]*(w/total_weight) for m,w in model_weights.items())
+ensemble_results.append(evaluate_predictions(
+    'Weighted Average', y_test, weighted_avg
+))
+
+# Stacking Ensemble
+predictions_train = {name: get_predictions(model, X_train_scaled, name)
+                    for name, model in trained_models.items()}
+
+meta_model = LinearRegression()
+meta_model.fit(ensemble_train.drop(columns=['True_ZHVI']), ensemble_train['True_ZHVI'])
+stacking_pred = meta_model.predict(ensemble_test.drop(columns=['True_ZHVI']))
+ensemble_results.append(evaluate_predictions(
+    'Stacking Ensemble', y_test, stacking_pred
+))
+
+# Create comparison DataFrame
+ensemble_comparison = pd.DataFrame(ensemble_results)
+ensemble_comparison.sort_values('MAPE', inplace=True)
+
+# Format for display
+display_df = ensemble_comparison.copy()
+for col in ['MAE', 'RMSE']:
+    display_df[col] = display_df[col].apply(lambda x: f"{x:,.2f}")
+display_df['MAPE'] = display_df['MAPE'].apply(lambda x: f"{x:.2f}%")
+display_df['R2'] = display_df['R2'].apply(lambda x: f"{x:.4f}")
+
+print("\nEnsemble Methods Performance (Sorted by MAPE):")
+print(tabulate(display_df[['Model', 'MAE', 'RMSE', 'MAPE', 'R2']],
+               headers='keys', tablefmt='psql', showindex=False))
+
+# Best ensemble method
+best_ensemble = ensemble_comparison.iloc[0]
+print(f"\nBest Performing Ensemble Method: {best_ensemble['Model']}")
+print(f"- MAE: {best_ensemble['MAE']:,.2f}")
+print(f"- RMSE: {best_ensemble['RMSE']:,.2f}")
+print(f"- MAPE: {best_ensemble['MAPE']:.2f}%")
+print(f"- R2: {best_ensemble['R2']:.4f}")
+
+# Save the complete ensemble model
+ensemble_package = {
+            'base_models': {name: model for name, model in trained_models.items() if name in predictions_train},
+            'meta_model': meta_model,
+            'poly': poly,
+            'scaler': scaler,
+            'feature_names': original_features,
+            'get_predictions': get_predictions
+        }
+
+joblib.dump(ensemble_package, 'final_zhvi_ensemble_model.pkl')
+
+"""Model Comparison"""
+
+# Create and display comparison
+comparison_df = pd.DataFrame(ensemble_comparison)
+comparison_df.loc[3] = ['OLS', MAE, rmse, mape*100, r2]
+comparison_df.loc[4] = ['Ridge', ridge_MAE, ridge_rmse, ridge_mape*100, ridge_r2]
+comparison_df.loc[5] = ['Lasso', lasso_MAE, lasso_rmse, lasso_mape*100, lasso_r2]
+comparison_df.loc[6] = ['Random Forest', rf_mae, rf_rmse, rf_mape*100, rf_r2]
+comparison_df.loc[7] = ['Neural Network', nn_mae, nn_rmse, nn_mape*100, nn_r2]
+comparison_df.loc[8] = ['XGBoost', xgb_mae, xgb_rmse, xgb_mape*100, xgb_r2]
+
+comparison_df.sort_values('MAPE', inplace=True)
+
+# Format for display
+display_df = comparison_df.copy()
+for col in ['MAE', 'RMSE']:
+    display_df[col] = display_df[col].apply(lambda x: f"{x:,.2f}")
+display_df['MAPE'] = display_df['MAPE'].apply(lambda x: f"{x:.2f}%")
+display_df['R2'] = display_df['R2'].apply(lambda x: f"{x:.4f}")
+
+print("\nModel Performance Comparison (Sorted by MAPE):")
+print(tabulate(display_df[['Model', 'MAE', 'RMSE', 'MAPE', 'R2']],
+               headers='keys', tablefmt='psql', showindex=False))
+
+# Visualization
+metrics = ['MAE', 'RMSE', 'MAPE', 'R2']
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig.suptitle('Model Performance Comparison', y=1.02)
+
+for ax, metric in zip(axes.flatten(), metrics):
+    if metric == 'MAPE':
+        comparison_df.plot.barh(x='Model', y=metric, ax=ax, legend=False)
+        ax.set_xlabel('MAPE (%)')
+    elif metric == 'R2':
+        comparison_df.plot.barh(x='Model', y=metric, ax=ax, legend=False)
+        ax.set_xlabel('R² Score')
+    else:
+        comparison_df.plot.barh(x='Model', y=metric, ax=ax, legend=False)
+        ax.set_xlabel(metric)
+
+    ax.invert_yaxis()
+    ax.grid(True, linestyle='--', alpha=0.6)
+
+plt.tight_layout()
+plt.show()
+
+# Best model summary
+best_model = comparison_df.iloc[0]
+print(f"\nBest Performing Model: {best_model['Model']}")
+print(f"- MAE: {best_model['MAE']:,.2f}")
+print(f"- RMSE: {best_model['RMSE']:,.2f}")
+print(f"- MAPE: {best_model['MAPE']:.2f}%")
+print(f"- R2: {best_model['R2']:.4f}")
+
+valid_test_indices = ensemble_test.index + 12
+valid_dates = test['Year-Month'].iloc[valid_test_indices]
+
+# Set up the plot
+plt.figure(figsize=(20, 8))
+
+# Plot
+plt.plot(valid_dates, test['ZHVI'].iloc[valid_test_indices], color='black', linewidth=3, label='True ZHVI', marker='o', markersize=5)
+plt.plot(valid_dates, OLS_pred.iloc[valid_test_indices], color='darkblue', linestyle='-', label='OLS')
+plt.plot(valid_dates, lasso_pred.iloc[valid_test_indices], color='green', linestyle='--', label='Lasso')
+plt.plot(valid_dates, ridge_pred.iloc[valid_test_indices], color='red', linestyle='--', label='Ridge')
+plt.plot(valid_dates, nn_predictions[valid_test_indices], color='purple', linestyle='-.', label='Neural Network')
+plt.plot(valid_dates, rf_predictions[valid_test_indices], color='orange', linestyle=':', label='Random Forest')
+plt.plot(valid_dates, test['XGBoost_Predicted_ZHVI'].iloc[valid_test_indices], color='blue', linestyle=':', label='XGBoost')
+plt.plot(valid_dates, simple_avg, color='cyan', linewidth=2, linestyle='-', label='Simple Average Ensemble')
+plt.plot(valid_dates, weighted_avg, color='magenta', linewidth=2, linestyle='-', label='Weighted Average Ensemble')
+plt.plot(valid_dates, stacking_pred, color='lime', linewidth=2, linestyle='-', label='Stacking Ensemble')
+
+# Formatting
+plt.xlabel('Date', fontsize=12)
+plt.ylabel('ZHVI', fontsize=12)
+plt.title('True vs Predicted ZHVI Values\n(All Models + Ensemble Methods Comparison)',
+          fontsize=14, pad=20)
+x_ticks = np.arange(0, len(valid_dates), 6)
+plt.xticks(x_ticks, valid_dates.iloc[x_ticks], rotation=45)
+
+# Add grid and legend
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+
+# Add performance metrics annotation
+metrics_text = (
+    f"Best Model: {best_ensemble['Model']}\n"
+    f"MAPE: {best_ensemble['MAPE']:.2f}%\n"
+    f"R²: {best_ensemble['R2']:.4f}\n"
+    f"RMSE: {best_ensemble['RMSE']:,.2f}"
+)
+plt.annotate(metrics_text, xy=(0.02, 0.75), xycoords='axes fraction',
+            bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+
+plt.tight_layout()
+plt.show()
+
+"""Streamlit App"""
 
 !streamlit run app.py &>/content/logs.txt & npx localtunnel --port 8501 & curl ipv4.icanhazip.com
-
-import urllib
-print("Password/Enpoint IP for localtunnel is:",urllib.request.urlopen('https://ipv4.icanhazip.com').read().decode('utf8').strip("\n"))
