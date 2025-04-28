@@ -138,6 +138,7 @@ Alpha parameter tuning yielded that the best alpha for Ridge Regression for this
 ### Milestone 2 Methodology
 **Neural Network Hyperparameter Tuning** 
 \
+\
 Configuration Options
 | Hyperparameter        | Search Space                  | Type       | Description |
 |-----------------------|-------------------------------|------------|-------------|
@@ -168,7 +169,9 @@ Neural Network Architecture found via Hyperparameter Tuning
 | **Learning Rate**    | 0.001       | 
 \ 
 \
-**XGBoost Hyperparameter Tuning** \ 
+**XGBoost Hyperparameter Tuning** 
+\
+\
 Configuration Options
 | Hyperparameter         | Search Space              | Type     | Description                                                                 |
 |------------------------|---------------------------|----------|-----------------------------------------------------------------------------|
@@ -198,7 +201,9 @@ XGBoost Architecture found via Hyperparameter Tuning
 | **gamma**              | 0.2           | 
 | **colsample_bytree**   | 0.9           | 
 
-**Random Forest Hyperparameter Tuning** \ \
+**Random Forest Hyperparameter Tuning** 
+\
+\
 Configuration Options
 | Hyperparameter         | Search Space              | Type     | Description                                                                 |
 |------------------------|---------------------------|----------|-----------------------------------------------------------------------------|
