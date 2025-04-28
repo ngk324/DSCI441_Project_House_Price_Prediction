@@ -137,7 +137,7 @@ Alpha parameter tuning yielded that the best alpha for Ridge Regression for this
 
 ### Milestone 2 Methodology
 **Neural Network Hyperparameter Tuning**
-
+Configuration Options
 | Hyperparameter        | Search Space                          | Type       | Notes                          |
 |-----------------------|---------------------------------------|------------|--------------------------------|
 | **First Layer Units** | 64, 128, 192, 256                    | Integer    | Step size of 64                |
