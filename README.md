@@ -264,7 +264,11 @@ The importance of time-related features like TimeIndex and Year reflects the imp
 
 ![Random Forest Feature Importance](img/rf_feature_importance.png)
 
+The Random Forest feature importance analysis reveals several key insights about the factors driving Zillow Home Value Index (ZHVI) predictions. Time-related features dominate the model's predictive power, with the quadratic time term (TimeIndex²) emerging as the most important feature, indicating strong non-linear trends in home price appreciation over time. This is complemented by the linear TimeIndex term and its interaction with CPI (TimeIndex CPI), suggesting that both the passage of time and how inflation affects housing prices over time are critical factors. Economic indicators play a significant role, particularly inflation measures, as seen in the importance of CPI² and CPI features, which capture both non-linear and direct effects of consumer prices on home values. The model also identifies annual patterns through Year TimeIndex and Year² features, reflecting cyclical market behavior and long-term trends. Interestingly, interest rates appear to influence home values in a time-dependent manner, as shown by the TimeIndex Interest Rate feature, rather than having a constant standalone effect. These findings suggest that housing prices are most sensitive to macroeconomic trends that evolve over time, with inflation being a particularly strong driver. The results imply that accurate ZHVI forecasting requires accounting for both temporal trends and their interaction with economic conditions, rather than looking at economic indicators in isolation. This aligns with real-world housing market behavior where prices respond dynamically to changing economic environments over multi-year periods.
+
 ## Model Performance Comparison (Sorted by MAPE)
+
+![Comparison of each Model](img/model_comparison.png)
 
 | Model               | MAE        | RMSE       | MAPE   | R²      |
 |---------------------|------------|------------|--------|---------|
@@ -278,5 +282,5 @@ The importance of time-related features like TimeIndex and Year reflects the imp
 | Stacking Ensemble   | 94,035.58  | 96,290.63  | 15.44% | -2.7514 |
 | Random Forest       | 102,800.77 | 110,934.40 | 17.08% | -2.391  |
 
-![MAPE Comparison of each Model](img/model_comparison_plot1.png)
+![Truth vs Prediction Plot](img/model_comparison_plot1.png)
 
