@@ -136,7 +136,7 @@ Alpha parameter tuning yielded that the best alpha for Lasso Regression for this
 Alpha parameter tuning yielded that the best alpha for Ridge Regression for this task is 0.25.
 
 ### Milestone 2 Methodology
-**Neural Network Hyperparameter Tuning** \
+**Neural Network Hyperparameter Tuning** \ \
 Configuration Options
 | Hyperparameter        | Search Space                  | Type       | Description |
 |-----------------------|-------------------------------|------------|-------------|
@@ -165,8 +165,10 @@ Neural Network Architecture found via Hyperparameter Tuning
 | **Layer Dimensions**  | 128, 64, 32 | 
 | **Dropout**          | 0.2         | 
 | **Learning Rate**    | 0.001       | 
-
-**XGBoost Hyperparameter Tuning Options**
+\ 
+\
+**XGBoost Hyperparameter Tuning** \ \
+Configuration Options
 | Hyperparameter         | Search Space              | Type     | Description                                                                 |
 |------------------------|---------------------------|----------|-----------------------------------------------------------------------------|
 | **max_depth**          | 3, 5, 7                   | Integer  | Maximum tree depth (complexity control)                                     |
@@ -195,7 +197,8 @@ XGBoost Architecture found via Hyperparameter Tuning
 | **gamma**              | 0.2           | 
 | **colsample_bytree**   | 0.9           | 
 
-**Random Forest Hyperparameter Tuning Options**
+**Random Forest Hyperparameter Tuning** \ \
+Configuration Options
 | Hyperparameter         | Search Space              | Type     | Description                                                                 |
 |------------------------|---------------------------|----------|-----------------------------------------------------------------------------|
 | **n_estimators**       | 100, 200, 300             | Integer  | Number of trees in the forest                                               |
@@ -213,7 +216,6 @@ Tuning Configuration
 | Fixed Parameters       | random_state=42           |
 
 Random Forest Best Parameters
-
 | Parameter           | Value  |
 |---------------------|--------|
 | max_depth           | None   |
