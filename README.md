@@ -136,7 +136,8 @@ Alpha parameter tuning yielded that the best alpha for Lasso Regression for this
 Alpha parameter tuning yielded that the best alpha for Ridge Regression for this task is 0.25.
 
 ### Milestone 2 Methodology
-**Neural Network Hyperparameter Tuning** \ 
+**Neural Network Hyperparameter Tuning** 
+\
 Configuration Options
 | Hyperparameter        | Search Space                  | Type       | Description |
 |-----------------------|-------------------------------|------------|-------------|
