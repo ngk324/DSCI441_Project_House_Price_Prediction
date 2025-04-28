@@ -138,6 +138,7 @@ Alpha parameter tuning yielded that the best alpha for Ridge Regression for this
 ### Milestone 2 Methodology
 \
 **Neural Network Hyperparameter Tuning** 
+\
 Configuration Options
 | Hyperparameter        | Search Space                  | Type       | Description |
 |-----------------------|-------------------------------|------------|-------------|
