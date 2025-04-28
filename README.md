@@ -170,9 +170,12 @@ Neural Network Architecture found via Hyperparameter Tuning
 
 \ 
 \
+
 **XGBoost Hyperparameter Tuning** 
+
 \
 \
+
 Configuration Options
 | Hyperparameter         | Search Space              | Type     | Description                                                                 |
 |------------------------|---------------------------|----------|-----------------------------------------------------------------------------|
