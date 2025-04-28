@@ -289,7 +289,7 @@ The Weighted Average model emerges as the best performer in this analysis due to
 
 That said, Ridge Regression remains a strong contender, especially when interpretability is a priority, as its coefficients provide clear insights into feature importance. The Weighted Average, while more accurate, operates as more of a "black box," making it less transparent for decision-making. The choice between the two ultimately depends on the project's goals: if minimizing prediction error is paramount, the Weighted Average is the clear winner, but if understanding the underlying relationships in the data is equally important, Ridge offers a compelling balance. Further investigation into the components of the Weighted Average model could reveal opportunities to optimize its performance even further, while diagnostic checks on Ridge could help close the gap in MAPE. Both models, however, outperform the others by a wide margin, highlighting the importance of selecting the right modeling approach for the data at hand.
 
-
+[Streamlit Tool for Prediction](https://dsci441projecthousepricepredictiongit-fmnuxwqwpunnbx6wesaryj.streamlit.app/)
 
 
 
