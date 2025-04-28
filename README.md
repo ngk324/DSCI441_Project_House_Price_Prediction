@@ -169,11 +169,9 @@ Neural Network Architecture found via Hyperparameter Tuning
 | **Learning Rate**    | 0.001       | 
 
 \ 
-\
 
 **XGBoost Hyperparameter Tuning** 
 
-\
 \
 
 Configuration Options
