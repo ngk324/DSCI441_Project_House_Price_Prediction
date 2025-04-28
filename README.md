@@ -168,9 +168,8 @@ Neural Network Architecture found via Hyperparameter Tuning
 | **Dropout**          | 0.2         | 
 | **Learning Rate**    | 0.001       | 
 
-
+\
 **XGBoost Hyperparameter Tuning** 
-
 
 Configuration Options
 | Hyperparameter         | Search Space              | Type     | Description                                                                 |
@@ -229,6 +228,7 @@ Random Forest Best Parameters
 | min_samples_split   | 2      |
 | n_estimators        | 300    |
 
+\
 ## Results
 
 | Model | RMSE    | MAPE    | MAE     | R^2     |
