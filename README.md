@@ -158,6 +158,43 @@ Tuning Configuration
 | Validation Split      | 20%                                   |
 | Objective Metric      | Validation Loss (MSE)                 |
 
+Optimal Hyperparameters Found
+```python
+Number of layers = 3
+Layers sizes = (128, 64, 32)
+Dropout Rate = 0.2
+Learning Rate = 0.001
+
+**XGBoost Hyperparameter Tuning Options**
+
+| Hyperparameter         | Search Space              | Type     | Description                                                                 |
+|------------------------|---------------------------|----------|-----------------------------------------------------------------------------|
+| **max_depth**          | 3, 5, 7                   | Integer  | Maximum tree depth (complexity control)                                     |
+| **learning_rate**      | 0.01, 0.05, 0.1           | Float    | Step size shrinkage (eta)                                                   |
+| **subsample**          | 0.8, 0.9, 1.0             | Float    | Fraction of samples used per tree (prevents overfitting)                    |
+| **colsample_bytree**   | 0.8, 0.9, 1.0             | Float    | Fraction of features used per tree (feature randomness)                     |
+| **gamma**              | 0, 0.1, 0.2               | Float    | Minimum loss reduction required for node split (regularization)             |
+| **min_child_weight**   | 1, 3, 5                   | Integer  | Minimum sum of instance weight needed in a child (controls tree growth)     |
+
+Tuning Configuration
+| Setting                | Value                     |
+|------------------------|---------------------------|
+| Tuning Algorithm       | RandomizedSearchCV        |
+| Number of Iterations   | 20                        |
+| Cross-Validation       | TimeSeriesSplit (n=3)     |
+| Scoring Metric         | Negative MAPE             |
+| Fixed Parameters       | n_estimators=100, random_state=42 |
+
+Optimal Hyperparameters found
+```python
+{
+    'max_depth': 5,
+    'learning_rate': 0.05,
+    'subsample': 0.9,
+    'colsample_bytree': 0.8,
+    'gamma': 0.1,
+    'min_child_weight': 3
+}
 
 ## Results
 
