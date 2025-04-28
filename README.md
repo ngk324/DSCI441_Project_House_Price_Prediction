@@ -200,6 +200,7 @@ XGBoost Architecture found via Hyperparameter Tuning
 | **gamma**              | 0.2           | 
 | **colsample_bytree**   | 0.9           | 
 
+\
 **Random Forest Hyperparameter Tuning** 
 \
 \
