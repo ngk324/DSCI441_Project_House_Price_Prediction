@@ -37,6 +37,44 @@ cd DSCI441_Project_House_Price_Prediction
 ## Usage
 After installation or opening on Google Colab, one can simply run all on the code. The datasets will be automatically downloaded from Kaggle and used. If running local, one can simply run the python file using their standard method for running Python code. 
 
+## Packages
+
+***Core Packages***
+- Python 3.x
+- pandas
+- numpy
+- matplotlib
+- scikit-learn
+- tensorflow
+- keras-tuner
+- xgboost
+- statsmodels
+- joblib
+- tabulate
+
+***Optional/Development Packages***
+- streamlit
+- kagglehub
+- IPython
+- warnings
+- os
+- math
+- random
+
+***Installation Commands***
+
+```bash
+# Core machine learning packages
+pip install pandas numpy matplotlib scikit-learn tensorflow keras-tuner xgboost statsmodels joblib tabulate
+
+# Optional packages
+pip install streamlit kagglehub
+
+# For Jupyter notebook functionality
+pip install IPython
+```
+
+
 ## Datasets
 - The ZHVI data comes from [this](https://www.kaggle.com/datasets/paultimothymooney/zillow-house-price-data?select=Sale_Prices_City.csv) Kaggle dataset.
   - This dataset in csv format contains multiple different housing information data, such as Median Price and ZHVI, and is broken up by per USA City or US State and by number of bedrooms. The range of dates is monthly from January 1996 to March 2020.
@@ -53,43 +91,6 @@ After installation or opening on Google Colab, one can simply run all on the cod
 - The GDP Growth Rate data comes from [this](https://www.kaggle.com/datasets/rajkumarpandey02/economy-of-the-united-states) Kaggle dataset.
   - This dataset contains various GDP statistics, as well as the interest rate each year from 1980 to 2024.
   - The data used is the GDP growth rate each year from 1996 to 2020. 
-
-## Packages
-
-### Core Packages
-- Python 3.x
-- pandas
-- numpy
-- matplotlib
-- scikit-learn
-- tensorflow
-- keras-tuner
-- xgboost
-- statsmodels
-- joblib
-- tabulate
-
-### Optional/Development Packages
-- streamlit
-- kagglehub
-- IPython
-- warnings
-- os
-- math
-- random
-
-### Installation Commands
-
-```bash
-# Core machine learning packages
-pip install pandas numpy matplotlib scikit-learn tensorflow keras-tuner xgboost statsmodels joblib tabulate
-
-# Optional packages
-pip install streamlit kagglehub
-
-# For Jupyter notebook functionality
-pip install IPython
-```
 
 ## Features
 The city of focus is New York City, as it is the largest city in the USA. The data used as the input is the data in the range of January 1996 to December 2012, thus the data in the range of January 2013 to March 2020 is used for prediction. The features used for this model are the monthly values.
