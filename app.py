@@ -113,3 +113,17 @@ if st.button('Predict ZHVI'):
         prediction = get_predictions(model, input_scaled, model_choice)
 
     st.subheader(f"Predicted ZHVI: ${prediction[0]:,.2f}")
+
+# Model Performance Comparison
+st.header("Model Performance Overview 📊")
+
+performance_data = {
+    'Model': ['Weighted Average', 'Neural Network', 'Ridge', 'OLS', 'Lasso', 'Simple Average', 'XGBoost', 'Stacking Ensemble', 'Random Forest'],
+    'MAE': [21694.88, 27119.78, 28891.17, 112483.28, 34030.37, 38783.54, 90674.54, 94035.58, 102800.77],
+    'RMSE': [24867.89, 54902.67, 34587.00, 130532.10, 44618.02, 40336.11, 102249.80, 96290.63, 110934.40],
+    'MAPE': [0.0369, 0.0447, 0.0482, 0.0536, 0.0549, 0.0647, 0.1449, 0.1544, 0.1708],
+    'R2': [0.7498, 0.1694, 0.8469, -0.1439, 0.7853, 0.3417, -3.2301, -2.7514, -2.391]
+}
+performance_df = pd.DataFrame(performance_data)
+
+st.dataframe(performance_df.sort_values('RMSE'))
