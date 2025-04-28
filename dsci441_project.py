@@ -1010,6 +1010,19 @@ plt.title('Time Series Plot: Truth vs Random Forest Predicted ZHVI')
 plt.legend(loc='upper left')
 plt.show()
 
+# Get top 10 features
+top_10_features = feature_importance.head(10)
+
+# Plot top 10 feature importance
+plt.figure(figsize=(10, 6))
+plt.barh(top_10_features['Feature'], top_10_features['Importance'], color='skyblue')
+plt.xlabel('Importance Score')
+plt.ylabel('Feature')
+plt.title('Top 10 Random Forest Feature Importance')
+plt.gca().invert_yaxis()  # Most important at top
+plt.tight_layout()  # Prevent label cutoff
+plt.show()
+
 """XGBoost Model"""
 
 # Split data into training and test (same as before)
@@ -1163,6 +1176,11 @@ plt.xticks(x_ticks)
 plt.title('Time Series Plot: Truth vs XGBoost Predicted ZHVI')
 plt.legend(loc='upper left')
 plt.show()
+
+# Display best parameters from hyperparameter tuning
+print("\nBest Hyperparameters from RandomizedSearchCV:")
+for param, value in search.best_params_.items():
+    print(f"{param}: {value}")
 
 """Comparison of Models"""
 
@@ -1386,9 +1404,9 @@ valid_test_indices = ensemble_test.index + 12
 valid_dates = test['Year-Month'].iloc[valid_test_indices]
 
 # Set up the plot
-plt.figure(figsize=(20, 8))
+plt.figure(figsize=(20, 10))  # Slightly taller figure
 
-# Plot
+# Plot - keeping your original styling
 plt.plot(valid_dates, test['ZHVI'].iloc[valid_test_indices], color='black', linewidth=3, label='True ZHVI', marker='o', markersize=5)
 plt.plot(valid_dates, OLS_pred.iloc[valid_test_indices], color='darkblue', linestyle='-', label='OLS')
 plt.plot(valid_dates, lasso_pred.iloc[valid_test_indices], color='green', linestyle='--', label='Lasso')
@@ -1401,18 +1419,19 @@ plt.plot(valid_dates, weighted_avg, color='magenta', linewidth=2, linestyle='-',
 plt.plot(valid_dates, stacking_pred, color='lime', linewidth=2, linestyle='-', label='Stacking Ensemble')
 
 # Formatting
-plt.xlabel('Date', fontsize=12)
-plt.ylabel('ZHVI', fontsize=12)
+plt.xlabel('Date', fontsize=14)  # Increased font size
+plt.ylabel('ZHVI', fontsize=14)  # Increased font size
 plt.title('True vs Predicted ZHVI Values\n(All Models + Ensemble Methods Comparison)',
-          fontsize=14, pad=20)
+          fontsize=16, pad=25, weight='bold')  # Bigger and bold title
 x_ticks = np.arange(0, len(valid_dates), 6)
-plt.xticks(x_ticks, valid_dates.iloc[x_ticks], rotation=45)
+plt.xticks(x_ticks, valid_dates.iloc[x_ticks], rotation=45, fontsize=12)  # Bigger x-tick labels
 
-# Add grid and legend
+# Add grid and legend with larger font
 plt.grid(True, linestyle='--', alpha=0.6)
-plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.,
+           prop={'size': 12}, framealpha=1)  # Bigger legend with solid background
 
-# Add performance metrics annotation
+# Add performance metrics annotation with bigger font
 metrics_text = (
     f"Best Model: {best_ensemble['Model']}\n"
     f"MAPE: {best_ensemble['MAPE']:.2f}%\n"
@@ -1420,11 +1439,11 @@ metrics_text = (
     f"RMSE: {best_ensemble['RMSE']:,.2f}"
 )
 plt.annotate(metrics_text, xy=(0.02, 0.75), xycoords='axes fraction',
-            bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+            bbox=dict(boxstyle='round', facecolor='white', alpha=0.8),
+            fontsize=12)  # Bigger annotation text
 
-plt.tight_layout()
+# Adjust layout to accommodate larger elements
+plt.tight_layout(rect=[0, 0, 0.85, 1])  # Leave space for legend on right
+
+plt.savefig('model_comparison_plot.png', dpi=300, bbox_inches='tight')
 plt.show()
-
-"""Streamlit App"""
-
-!streamlit run app.py &>/content/logs.txt & npx localtunnel --port 8501 & curl ipv4.icanhazip.com
