@@ -229,6 +229,7 @@ Random Forest Best Parameters
 | min_samples_split   | 2      |
 | n_estimators        | 300    |
 
+\
 ## Results
 
 | Model | RMSE    | MAPE    | MAE     | R^2     |
