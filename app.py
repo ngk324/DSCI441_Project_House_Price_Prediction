@@ -35,7 +35,7 @@ total_weight = sum(model_weights.values())
 normalized_weights = {model: weight/total_weight for model, weight in model_weights.items()}
 
 # Streamlit UI
-st.title("ZHVI Prediction Tool 🏠📈")
+st.title("NYC ZHVI Prediction Tool 🏠📈")
 st.write("Select a model and input your feature values to predict Zillow Housing Index (ZHVI)")
 st.sidebar.header('Model and Input Settings')
 
