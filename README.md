@@ -159,14 +159,12 @@ Tuning Configuration
 | Objective Metric      | Validation Loss (MSE)                 |
 
 Optimal Hyperparameters Found
-```python
-Number of layers = 3
-Layers sizes = (128, 64, 32)
-Dropout Rate = 0.2
-Learning Rate = 0.001
+Number of layers: 3
+Layers sizes: (128, 64, 32)
+Dropout Rate: 0.2
+Learning Rate: 0.001
 
 **XGBoost Hyperparameter Tuning Options**
-
 | Hyperparameter         | Search Space              | Type     | Description                                                                 |
 |------------------------|---------------------------|----------|-----------------------------------------------------------------------------|
 | **max_depth**          | 3, 5, 7                   | Integer  | Maximum tree depth (complexity control)                                     |
@@ -186,15 +184,12 @@ Tuning Configuration
 | Fixed Parameters       | n_estimators=100, random_state=42 |
 
 Optimal Hyperparameters found
-```python
-{
-    'max_depth': 5,
-    'learning_rate': 0.05,
-    'subsample': 0.9,
-    'colsample_bytree': 0.8,
-    'gamma': 0.1,
-    'min_child_weight': 3
-}
+subsample: 0.8
+min_child_weight: 1
+max_depth: 5
+learning_rate: 0.1
+gamma: 0.2
+colsample_bytree: 0.9
 
 ## Results
 
