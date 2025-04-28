@@ -127,3 +127,7 @@ performance_data = {
 performance_df = pd.DataFrame(performance_data)
 
 st.dataframe(performance_df.sort_values('RMSE'))
+
+st.image("img/zhvi_cpi.png", 
+         caption="ZHVI vs CPI Relationship", 
+         use_column_width=True)
