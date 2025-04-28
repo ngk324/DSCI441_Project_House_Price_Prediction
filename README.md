@@ -130,3 +130,18 @@ The image shows the top 10 most important features in the Lasso regression model
 
 The importance of time-related features like TimeIndex and Year reflects the impact of long-term trends and seasonal patterns on housing prices, such as gradual appreciation or cyclical fluctuations. Meanwhile, economic indicators like Unemployment Rate and CPI capture the influence of labor market conditions and inflation on housing costs. The presence of interaction terms (e.g., TimeIndex Unemployment Rate) suggests that the relationship between economic conditions and housing prices evolves over time, further emphasizing the dynamic nature of the housing market. Overall, these results align with economic principles, demonstrating that both time and economic factors are key drivers of housing price changes.
 
+### Milestone 2 Results
+
+## Model Performance Comparison (Sorted by MAPE)
+
+| Model               | MAE        | RMSE       | MAPE   | R²      |
+|---------------------|------------|------------|--------|---------|
+| Weighted Average    | 21,694.88  | 24,867.89  | 3.69%  | 0.7498  |
+| Neural Network      | 27,119.78  | 54,902.67  | 4.47%  | 0.1694  |
+| Ridge               | 28,891.17  | 34,587.00  | 4.82%  | 0.8469  |
+| OLS                 | 112,483.28 | 130,532.10 | 5.36%  | -0.1439 |
+| Lasso               | 34,030.37  | 44,618.02  | 5.49%  | 0.7853  |
+| Simple Average      | 38,783.54  | 40,336.11  | 6.47%  | 0.3417  |
+| XGBoost             | 90,674.54  | 102,249.80 | 14.49% | -3.2301 |
+| Stacking Ensemble   | 94,035.58  | 96,290.63  | 15.44% | -2.7514 |
+| Random Forest       | 102,800.77 | 110,934.40 | 17.08% | -2.391  |
