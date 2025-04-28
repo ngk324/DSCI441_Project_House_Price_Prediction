@@ -116,9 +116,6 @@ There is no clear visual overall relationship between ZHVI and GDP growth rate, 
 
 There is no clear visual overall relationship between ZVHI and Interest rate.
 
-
-
-
 ## Methodology
 Ordinary least squares regression, Lasso regression, and Ridge Regression are all performed and compared. Alpha parameter tuning is performed for Lasso regression and Ridge Regression to find the optimal alpha values.
 
@@ -173,9 +170,9 @@ The importance of time-related features like TimeIndex and Year reflects the imp
 
 ### Milestone 2 Results
 
-## Model Performance Comparison (Sorted by MAPE)
-
 ![Random Forest Feature Importance](img/rf_feature_importance.png)
+
+## Model Performance Comparison (Sorted by MAPE)
 
 | Model               | MAE        | RMSE       | MAPE   | R²      |
 |---------------------|------------|------------|--------|---------|
