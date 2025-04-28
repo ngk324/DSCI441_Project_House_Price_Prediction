@@ -175,6 +175,8 @@ The importance of time-related features like TimeIndex and Year reflects the imp
 
 ## Model Performance Comparison (Sorted by MAPE)
 
+![Random Forest Feature Importance](img/rf_feature_importance.png)
+
 | Model               | MAE        | RMSE       | MAPE   | R²      |
 |---------------------|------------|------------|--------|---------|
 | Weighted Average    | 21,694.88  | 24,867.89  | 3.69%  | 0.7498  |
@@ -188,3 +190,4 @@ The importance of time-related features like TimeIndex and Year reflects the imp
 | Random Forest       | 102,800.77 | 110,934.40 | 17.08% | -2.391  |
 
 ![MAPE Comparison of each Model](img/model_comparison_plot1.png)
+
