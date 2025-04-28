@@ -138,16 +138,16 @@ Alpha parameter tuning yielded that the best alpha for Ridge Regression for this
 ### Milestone 2 Methodology
 **Neural Network Hyperparameter Tuning**
 Configuration Options
-| Hyperparameter        | Search Space                          | Type       | Notes                          |
-|-----------------------|---------------------------------------|------------|--------------------------------|
-| **First Layer Units** | 64, 128, 192, 256                    | Integer    | Step size of 64                |
-| **Number of Layers**  | 1-3                                   | Integer    | 1 to 3 hidden layers           |
-| **Hidden Layer Units**| 32, 64, 96, 128                      | Integer    | Step size of 32                |
-| **Dropout Rates**     | 0.0, 0.1, 0.2, 0.3, 0.4, 0.5         | Float      | Step size of 0.1               |
-| **Learning Rate**     | 0.01, 0.001, 0.0001                  | Choice     | Adam optimizer                 |
-| **Batch Size**        | 32                                    | Fixed      | Not tuned                      |
-| **Epochs**           | 100                                   | Fixed      | With early stopping            |
-| **Early Stopping**    | Patience: 10                         | Fixed      | Restores best weights          |
+| Hyperparameter        | Search Space                  | Type       | Description |
+|-----------------------|-------------------------------|------------|-------------|
+| **First Layer Units** | 64, 128, 192, 256             | Integer    | Number of neurons in the initial dense layer. Larger values increase capacity but risk overfitting. Step size of 64 provides gradual scaling options. |
+| **Number of Layers**  | 1-3                           | Integer    | Controls model depth. More layers can capture complex patterns but may be harder to train. Limited to 3 hidden layers for this architecture. |
+| **Hidden Layer Units**| 32, 64, 96, 128               | Integer    | Neurons in subsequent hidden layers. Typically decreases from first layer (pyramid pattern). Step size of 32 allows gradual reduction. |
+| **Dropout Rates**     | 0.0-0.5 (step 0.1)            | Float      | Fraction of neurons randomly deactivated during training. Regularization technique to prevent overfitting. 0.0 = no dropout, 0.5 = half neurons dropped. |
+| **Learning Rate**     | 0.01, 0.001, 0.0001           | Choice     | Step size for weight updates. Lower values train slower but more precisely. Adam optimizer adapts rates per-parameter. |
+| **Batch Size**        | 32                            | Fixed      | Number of samples per gradient update. Fixed for memory efficiency and stable training. Not tuned in this configuration. |
+| **Epochs**           | 100                           | Fixed      | Maximum training iterations. Early stopping may terminate earlier if validation loss plateaus. |
+| **Early Stopping**    | Patience: 10                  | Fixed      | Stops training if no improvement in validation loss for 10 epochs. Restores weights from best epoch to prevent overfitting. |
 
 Tuning Configuration
 | Setting               | Value                                 |
@@ -158,11 +158,13 @@ Tuning Configuration
 | Validation Split      | 20%                                   |
 | Objective Metric      | Validation Loss (MSE)                 |
 
-Optimal Hyperparameters Found
-Number of layers: 3
-Layers sizes: (128, 64, 32)
-Dropout Rate: 0.2
-Learning Rate: 0.001
+Neural Network Architecture found via Hyperparameter Tuning
+| Configuration     | Value       | 
+|-------------------|-------------|
+| **Hidden Layers**     | 3           | 
+| **Layer Dimensions**  | 128, 64, 32 | 
+| **Dropout**          | 0.2         | 
+| **Learning Rate**    | 0.001       | 
 
 **XGBoost Hyperparameter Tuning Options**
 | Hyperparameter         | Search Space              | Type     | Description                                                                 |
@@ -183,13 +185,41 @@ Tuning Configuration
 | Scoring Metric         | Negative MAPE             |
 | Fixed Parameters       | n_estimators=100, random_state=42 |
 
-Optimal Hyperparameters found
-subsample: 0.8
-min_child_weight: 1
-max_depth: 5
-learning_rate: 0.1
-gamma: 0.2
-colsample_bytree: 0.9
+XGBoost Architecture found via Hyperparameter Tuning
+| Hyperparameter         | Optimal Value |
+|------------------------|---------------|
+| **subsample**          | 0.8           | 
+| **min_child_weight**   | 1             | 
+| **max_depth**          | 5             | 
+| **learning_rate**      | 0.1           | 
+| **gamma**              | 0.2           | 
+| **colsample_bytree**   | 0.9           | 
+
+**Random Forest Hyperparameter Tuning Options**
+| Hyperparameter         | Search Space              | Type     | Description                                                                 |
+|------------------------|---------------------------|----------|-----------------------------------------------------------------------------|
+| **n_estimators**       | 100, 200, 300             | Integer  | Number of trees in the forest                                               |
+| **max_depth**          | None, 10, 20, 30          | Integer  | Maximum depth of each tree (None=unlimited)                                 |
+| **min_samples_split**  | 2, 5, 10                  | Integer  | Minimum samples required to split a node                                    |
+| **min_samples_leaf**   | 1, 2, 4                   | Integer  | Minimum samples required at each leaf node                                  |
+
+Tuning Configuration
+| Setting                | Value                     |
+|------------------------|---------------------------|
+| Tuning Algorithm       | GridSearchCV              |
+| Search Strategy        | Exhaustive grid search    |
+| Cross-Validation       | 5-fold                    |
+| Scoring Metric         | Negative MSE              |
+| Fixed Parameters       | random_state=42           |
+
+Random Forest Best Parameters
+
+| Parameter           | Value  |
+|---------------------|--------|
+| max_depth           | None   |
+| min_samples_leaf    | 1      |
+| min_samples_split   | 2      |
+| n_estimators        | 300    |
 
 ## Results
 
