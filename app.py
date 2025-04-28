@@ -128,6 +128,17 @@ performance_df = pd.DataFrame(performance_data)
 
 st.dataframe(performance_df.sort_values('RMSE'))
 
+st.header("Plot of Economical Features Used As Input📈💹💸")
+st.write("Use these features as a guideline for inputs. Dates range from 1996 to 2020.")
+
 st.image("img/zhvi_cpi.png", 
-         caption="ZHVI vs CPI Relationship", 
-         use_column_width=True)
+         caption="ZHVI vs CPI Relationship")
+
+st.image("img/zhvi_ir.png", 
+         caption="ZHVI vs Interest Rate Relationship")
+
+st.image("img/zhvi_unem.png", 
+         caption="ZHVI vs Unemployment Rate Relationship")
+
+st.image("img/zhvi_gdp.png", 
+         caption="ZHVI vs GDP Growth Rate Relationship")
