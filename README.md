@@ -145,3 +145,5 @@ The importance of time-related features like TimeIndex and Year reflects the imp
 | XGBoost             | 90,674.54  | 102,249.80 | 14.49% | -3.2301 |
 | Stacking Ensemble   | 94,035.58  | 96,290.63  | 15.44% | -2.7514 |
 | Random Forest       | 102,800.77 | 110,934.40 | 17.08% | -2.391  |
+
+![MAPE Comparison of each Model](img/model_comparison_plot.png)
