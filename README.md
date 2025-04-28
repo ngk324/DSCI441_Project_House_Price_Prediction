@@ -32,6 +32,7 @@ If one wants to run the code locally, one can retrieve the code by running
 # Example installation commands
 git clone https://github.com/ngk324/DSCI441_Project_House_Price_Prediction.git
 cd DSCI441_Project_House_Price_Prediction
+python3 DSCI441_Project.py
 ```
 
 ## Usage
@@ -283,4 +284,12 @@ The Random Forest feature importance analysis reveals several key insights about
 | Random Forest       | 102,800.77 | 110,934.40 | 17.08% | -2.391  |
 
 ![Truth vs Prediction Plot](img/model_comparison_plot1.png)
+
+The Weighted Average model emerges as the best performer in this analysis due to its superior predictive accuracy, demonstrated by its lowest MAPE of 3.69%. While Ridge achieves the highest R² (0.8469), indicating strong explanatory power for variance in the data, the Weighted Average's lower MAE (21,694 vs. Ridge's 28,891) and RMSE (24,867 vs. 34,587) suggest it delivers more precise predictions in real-world terms. MAPE is particularly insightful here because it quantifies error as a percentage of actual values, making it easier to interpret and compare across models. The Weighted Average's success likely stems from its ensemble approach, which combines the strengths of multiple models to mitigate individual weaknesses and reduce overfitting, a key issue for complex models like XGBoost and Neural Networks in this dataset.
+
+That said, Ridge Regression remains a strong contender, especially when interpretability is a priority, as its coefficients provide clear insights into feature importance. The Weighted Average, while more accurate, operates as more of a "black box," making it less transparent for decision-making. The choice between the two ultimately depends on the project's goals: if minimizing prediction error is paramount, the Weighted Average is the clear winner, but if understanding the underlying relationships in the data is equally important, Ridge offers a compelling balance. Further investigation into the components of the Weighted Average model could reveal opportunities to optimize its performance even further, while diagnostic checks on Ridge could help close the gap in MAPE. Both models, however, outperform the others by a wide margin, highlighting the importance of selecting the right modeling approach for the data at hand.
+
+
+
+
 
